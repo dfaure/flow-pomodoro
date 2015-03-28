@@ -4,6 +4,10 @@ macro(add_distractions_plugin _name _has_resources)
     add_flow_plugin(${_name} distractions ${_has_resources})
 endmacro()
 
+macro(add_storage_plugin _name _has_resources)
+    add_flow_plugin(${_name} storage ${_has_resources})
+endmacro()
+
 macro(add_flow_plugin _name _type _has_resources)
     add_definitions(-DQT_PLUGIN)
     add_definitions(-DQT_SHARED)
@@ -19,3 +23,4 @@ macro(add_flow_plugin _name _type _has_resources)
 endmacro()
 
 add_subdirectory(distractions)
+add_subdirectory(storage)
