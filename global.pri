@@ -16,7 +16,8 @@ win32:!mingw {
     LIBS += Shell32.lib
 }
 
-INCLUDEPATH += src
+INCLUDEPATH += $$PWD/src
+INCLUDEPATH += $$PWD/plugin_interface
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
