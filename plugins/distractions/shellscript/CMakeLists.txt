@@ -1,1 +1,1 @@
-add_flow_plugin(shellscript TRUE)
+add_distractions_plugin(shellscript TRUE)

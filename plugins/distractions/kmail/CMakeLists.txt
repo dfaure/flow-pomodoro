@@ -1,1 +1,1 @@
-add_flow_plugin(kmail FALSE)
+add_distractions_plugin(kmail FALSE)

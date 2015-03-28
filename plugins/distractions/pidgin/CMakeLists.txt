@@ -1,1 +1,1 @@
-add_flow_plugin(pidgin FALSE)
+add_distractions_plugin(pidgin FALSE)

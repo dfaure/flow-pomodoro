@@ -1,1 +1,1 @@
-add_flow_plugin(hosts TRUE)
+add_distractions_plugin(hosts TRUE)
