@@ -63,8 +63,8 @@ Page {
                 }
 
                 Tab {
-                    title: qsTr("Plugins")
-                    source: "config/Plugins.qml"
+                    title: qsTr("Distractions")
+                    source: "config/Distractions.qml"
                 }
 
                 Repeater {

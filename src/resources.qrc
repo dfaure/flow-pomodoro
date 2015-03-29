@@ -46,6 +46,7 @@
     <file>qml/TaskTextField.qml</file>
     <file>qml/ToolTip.qml</file>
 
+    <file>qml/config/Distractions.qml</file>
     <file>qml/config/Hacking.qml</file>
     <file>qml/config/General.qml</file>
     <file>qml/config/Plugins.qml</file>

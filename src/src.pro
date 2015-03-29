@@ -26,6 +26,7 @@ SOURCES += main.cpp
 OTHER_FILES += qml/AboutPage.qml      \
                qml/Choice.qml \
                qml/ChoicePopup.qml \
+               qml/config/Distractions.qml \
                qml/config/Hacking.qml \
                qml/config/General.qml \
                qml/config/Plugins.qml \

@@ -6,6 +6,9 @@ import ".."
 Item {
     id: root
     anchors.fill: parent
+    property string smallText: ""
+    property string noPluginsText: ""
+    property QtObject pluginModel: null
 
     Text {
         id: smallText1
@@ -16,14 +19,13 @@ Item {
         anchors.right: parent.right
         wrapMode: Text.WordWrap
         font.pixelSize: 13 * _controller.dpiFactor
-        text: qsTr("Plugins disable certain distractions when a task is running. Distractions are re-enabled when the task stops.") +
-              "\n" + (_distractionsPluginModel.count > 0 ? qsTr("The following plugins were found:") : "")
+        text: root.smallText
     }
 
     Text {
-        visible: _distractionsPluginModel.count === 0
+        visible: pluginModel.count === 0
         anchors.centerIn: parent
-        text: qsTr("no plugins were found")
+        text: root.noPluginsText
         horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 13 * _controller.dpiFactor
     }
@@ -39,7 +41,7 @@ Item {
         anchors.right: parent.right
         boundsBehavior: Flickable.StopAtBounds
 
-        model: _distractionsPluginModel
+        model: pluginModel
         height: 60
         spacing: 5 * _controller.dpiFactor
         clip: true
@@ -89,7 +91,7 @@ Item {
                     anchors.topMargin: 2 * _controller.dpiFactor
                     checked: enabledRole
                     onCheckedChanged: {
-                        _distractionsPluginModel.setPluginEnabled(checked, index)
+                        pluginModel.setPluginEnabled(checked, index)
                     }
                 }
             }
