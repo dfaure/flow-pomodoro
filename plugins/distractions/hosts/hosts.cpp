@@ -1,7 +1,7 @@
 /*
   This file is part of Flow.
 
-  Copyright (C) 2014 Sérgio Martins <iamsergio@gmail.com>
+  Copyright (C) 2014-2015 Sérgio Martins <iamsergio@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -64,27 +64,10 @@ static QString hostsFileName()
 #endif
 }
 
-HostsPlugin::HostsPlugin() : QObject(), PluginInterface()
-  , m_enabled(false)
-  , m_qmlEngine(0)
-  , m_configItem(0)
-  , m_settings(0)
+HostsPlugin::HostsPlugin() : PluginInterface()
 {
     // Fixes crash in static mode, because qqmlimport calls QPluginLoader::staticPlugins() before us.
     moveToThread(qApp->thread());
-}
-
-void HostsPlugin::setEnabled(bool enabled)
-{
-    if (enabled != m_enabled) {
-        m_enabled = enabled;
-        update(m_enabled);
-    }
-}
-
-bool HostsPlugin::enabled() const
-{
-    return m_enabled;
 }
 
 void HostsPlugin::update(bool allowDistractions)
@@ -95,7 +78,7 @@ void HostsPlugin::update(bool allowDistractions)
 
 void HostsPlugin::setTaskStatus(TaskStatus status)
 {
-    if (m_enabled)
+    if (enabled())
         update(status != TaskStarted);
 }
 
@@ -115,69 +98,32 @@ QObject *HostsPlugin::controller()
     return this;
 }
 
-void HostsPlugin::setQmlEngine(QQmlEngine *engine)
+QQmlComponent* HostsPlugin::configComponent() const
 {
-    Q_ASSERT(!m_qmlEngine && engine);
-    m_qmlEngine = engine;
-
-    QQmlComponent *component = new QQmlComponent(engine, QUrl("qrc:/plugins/hosts/Config.qml"),
-                                                 QQmlComponent::PreferSynchronous, this);
-
-    if (component->isError()) {
-        setLastError("Error creating component: " + component->errorString());
-        return;
-    }
-
-    QQmlContext *subContext = new QQmlContext(engine->rootContext());
-    m_configItem = qobject_cast<QQuickItem*>(component->create(subContext));
-    subContext->setContextProperty("_plugin", this);
-
-    if (!m_configItem) {
-        setLastError("Error creating item");
-        return;
-    }
-}
-
-QQuickItem *HostsPlugin::configureItem() const
-{
-    return m_configItem;
+    return new QQmlComponent(qmlEngine(), QUrl("qrc:/plugins/hosts/Config.qml"),
+                             QQmlComponent::PreferSynchronous, const_cast<QObject*>((QObject*)this));
 }
 
 void HostsPlugin::setSettings(QSettings *settings)
 {
-    Q_ASSERT(!m_settings && settings);
-    m_settings = settings;
-    m_settings->beginGroup("hosts");
-    bool firstRun = m_settings->value("firstRun", /*default=*/ true).toBool();
+    PluginInterface::setSettings(settings);
+
+    settings->beginGroup("hosts");
+    bool firstRun = settings->value("firstRun", /*default=*/ true).toBool();
     if (firstRun) {
-        m_settings->setValue("firstRun", false);
+        settings->setValue("firstRun", false);
         QString examples = "www.facebook.com\nwww.9gag.com\n";
-        m_settings->setValue("hosts", examples);
-        m_settings->sync();
+        settings->setValue("hosts", examples);
+        settings->sync();
     }
 
-    setHosts(m_settings->value("hosts").toString());
-    m_settings->endGroup();
+    setHosts(settings->value("hosts").toString());
+    settings->endGroup();
 }
 
 bool HostsPlugin::enabledByDefault() const
 {
     return false;
-}
-
-void HostsPlugin::setLastError(const QString &lastError)
-{
-    if (!lastError.isEmpty())
-        qWarning() << "Hosts:" << lastError;
-    if (lastError != m_lastError) {
-        m_lastError = lastError;
-        emit lastErrorChanged();
-    }
-}
-
-QString HostsPlugin::lastError() const
-{
-    return m_lastError;
 }
 
 bool HostsPlugin::checkSanity()
@@ -276,10 +222,11 @@ void HostsPlugin::setHosts(const QString &hosts)
 {
     if (hosts != m_hosts) {
         m_hosts = hosts;
-        m_settings->beginGroup("hosts");
-        m_settings->setValue("hosts", hosts);
-        m_settings->endGroup();
-        m_settings->sync();
+        QSettings *settings = this->settings();
+        settings->beginGroup("hosts");
+        settings->setValue("hosts", hosts);
+        settings->endGroup();
+        settings->sync();
         emit hostsChanged();
     }
 }

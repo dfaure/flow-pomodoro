@@ -1,7 +1,7 @@
 /*
   This file is part of Flow.
 
-  Copyright (C) 2014 Sérgio Martins <iamsergio@gmail.com>
+  Copyright (C) 2014-2015 Sérgio Martins <iamsergio@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,33 +22,25 @@
 
 #include "plugininterface.h"
 #include "task.h"
-#include <QObject>
+
 #include <QProcess>
 #include <QMutex>
 
-class ShellScriptPlugin : public QObject, public PluginInterface
+class ShellScriptPlugin : public PluginInterface
 {
     Q_OBJECT
-    Q_PROPERTY(QString lastError READ lastError NOTIFY lastErrorChanged)
     Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginInterface/v0.9.3")
     Q_INTERFACES(PluginInterface)
 
 public:
     ShellScriptPlugin();
 
-    void setEnabled(bool enabled) Q_DECL_OVERRIDE;
-    bool enabled() const Q_DECL_OVERRIDE;
-
     void setTaskStatus(TaskStatus status) Q_DECL_OVERRIDE;
     QString text() const Q_DECL_OVERRIDE;
     QString helpText() const Q_DECL_OVERRIDE;
     QObject *controller() Q_DECL_OVERRIDE;
-    void setQmlEngine(QQmlEngine *) Q_DECL_OVERRIDE;
-    QQuickItem *configureItem() const Q_DECL_OVERRIDE;
-    void setSettings(QSettings *) Q_DECL_OVERRIDE;
+    QQmlComponent* configComponent() const Q_DECL_OVERRIDE;
     bool enabledByDefault() const Q_DECL_OVERRIDE;
-
-    QString lastError() const;
 
 public Q_SLOTS:
     void editScript();
@@ -58,14 +50,11 @@ Q_SIGNALS:
 
 private:
     bool checkSanity();
-    void setLastError(const QString &);
-    void update(bool blockDistractions);
+    void update(bool blockDistractions) Q_DECL_OVERRIDE;
     void startProcess(const QString &filename, const QStringList &arguments);
-    bool m_enabled;
     QMutex m_mutex;
     bool m_allowingDistractions;
     QString m_scriptName;
-    QString m_lastError;
     QQmlEngine *m_qmlEngine;
     QQuickItem *m_configItem;
 };

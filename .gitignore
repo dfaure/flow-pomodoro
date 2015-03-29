@@ -54,3 +54,4 @@ lib*.a
 /tests/unit-test-settings.ini
 *.qrc.depends
 install_manifest.txt
+libflowplugininterface.so.*

@@ -1,4 +1,3 @@
-include ("../../global.pri")
 include ("../distractions.pri")
 
 QT       += dbus

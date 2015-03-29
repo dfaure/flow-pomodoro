@@ -4,6 +4,8 @@
   Copyright (C) 2013 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
   Author: Sérgio Martins <sergio.martins@kdab.com>
 
+  Copyright (C) 2014-2015 Sérgio Martins <iamsergio@gmail.com>
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 2 of the License, or
@@ -23,40 +25,27 @@
 
 #include "plugininterface.h"
 #include "task.h"
-#include <QObject>
 
-class PidginPlugin : public QObject, public PluginInterface
+class PidginPlugin : public PluginInterface
 {
     Q_OBJECT
-    Q_PROPERTY(QString lastError READ lastError NOTIFY lastErrorChanged)
     Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginInterface/v0.9.3")
     Q_INTERFACES(PluginInterface)
 
 public:
     PidginPlugin();
 
-    void setEnabled(bool enabled) Q_DECL_OVERRIDE;
-    bool enabled() const Q_DECL_OVERRIDE;
-
     void setTaskStatus(TaskStatus status) Q_DECL_OVERRIDE;
     QString text() const Q_DECL_OVERRIDE;
     QString helpText() const Q_DECL_OVERRIDE;
     QObject *controller() Q_DECL_OVERRIDE;
-    void setQmlEngine(QQmlEngine *) Q_DECL_OVERRIDE;
-    QQuickItem *configureItem() const Q_DECL_OVERRIDE;
-    void setSettings(QSettings *) Q_DECL_OVERRIDE;
     bool enabledByDefault() const Q_DECL_OVERRIDE;
-
-    QString lastError() const;
 
 Q_SIGNALS:
     void lastErrorChanged();
 
 private:
-    void setLastError(const QString &);
-    void update(bool enable);
-    bool m_enabled;
-    QString m_lastError;
+    void update(bool enable) Q_DECL_OVERRIDE;
 };
 
 #endif

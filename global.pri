@@ -18,6 +18,7 @@ win32:!mingw {
 
 INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/plugin_interface
+LIBS += -lflowplugininterface -L $$shadowed($$PWD)
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 

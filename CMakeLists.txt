@@ -27,6 +27,7 @@ else()
 endif()
 
 
+add_subdirectory(plugin_interface)
 add_subdirectory(src)
 add_subdirectory(plugins)
 

@@ -1,7 +1,7 @@
 /*
   This file is part of Flow.
 
-  Copyright (C) 2014 Sérgio Martins <iamsergio@gmail.com>
+  Copyright (C) 2014-2015 Sérgio Martins <iamsergio@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -76,8 +76,7 @@ private:
     QMutex *m_mutex;
 };
 
-ShellScriptPlugin::ShellScriptPlugin() : QObject(), PluginInterface()
-  , m_enabled(false)
+ShellScriptPlugin::ShellScriptPlugin() : PluginInterface()
   , m_allowingDistractions(true)
   , m_qmlEngine(0)
   , m_configItem(0)
@@ -110,19 +109,6 @@ ShellScriptPlugin::ShellScriptPlugin() : QObject(), PluginInterface()
     checkSanity();
 }
 
-void ShellScriptPlugin::setEnabled(bool enabled)
-{
-    if (enabled != m_enabled) {
-        m_enabled = enabled;
-        update(m_enabled);
-    }
-}
-
-bool ShellScriptPlugin::enabled() const
-{
-    return m_enabled;
-}
-
 void ShellScriptPlugin::update(bool allowDistractions)
 {
     if (allowDistractions == m_allowingDistractions)
@@ -143,7 +129,7 @@ void ShellScriptPlugin::update(bool allowDistractions)
 
 void ShellScriptPlugin::setTaskStatus(TaskStatus status)
 {
-    if (m_enabled) {
+    if (enabled()) {
         update(status != TaskStarted);
     }
 }
@@ -163,63 +149,20 @@ QObject *ShellScriptPlugin::controller()
     return this;
 }
 
-void ShellScriptPlugin::setQmlEngine(QQmlEngine *engine)
+QQmlComponent *ShellScriptPlugin::configComponent() const
 {
-    Q_ASSERT(!m_qmlEngine && engine);
-
 #if defined(Q_OS_LINUX)
     if (linuxTextEditor().isEmpty())
-        return;
+        return 0;
 #endif
 
-    m_qmlEngine = engine;
-
-    QQmlComponent *component = new QQmlComponent(engine, QUrl("qrc:/plugins/shellscript/Config.qml"),
-                                                 QQmlComponent::PreferSynchronous, this);
-
-    if (component->isError()) {
-        setLastError("Error creating component: " + component->errorString());
-        return;
-    }
-
-    QQmlContext *subContext = new QQmlContext(engine->rootContext());
-    m_configItem = qobject_cast<QQuickItem*>(component->create(subContext));
-    subContext->setContextProperty("_plugin", this);
-
-    if (!m_configItem) {
-        setLastError("Error creating item");
-        return;
-    }
-}
-
-QQuickItem *ShellScriptPlugin::configureItem() const
-{
-    return m_configItem;
-}
-
-void ShellScriptPlugin::setSettings(QSettings *)
-{
-
+    return new QQmlComponent(qmlEngine(), QUrl("qrc:/plugins/shellscript/Config.qml"),
+                             QQmlComponent::PreferSynchronous, const_cast<QObject*>((QObject*)this));
 }
 
 bool ShellScriptPlugin::enabledByDefault() const
 {
     return true;
-}
-
-void ShellScriptPlugin::setLastError(const QString &lastError)
-{
-    if (!lastError.isEmpty())
-        qWarning() << "ShellScriptPlugin:" << lastError;
-    if (lastError != m_lastError) {
-        m_lastError = lastError;
-        emit lastErrorChanged();
-    }
-}
-
-QString ShellScriptPlugin::lastError() const
-{
-    return m_lastError;
 }
 
 void ShellScriptPlugin::editScript()

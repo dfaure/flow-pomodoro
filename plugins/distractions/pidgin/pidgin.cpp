@@ -4,6 +4,8 @@
   Copyright (C) 2013 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
   Author: Sérgio Martins <sergio.martins@kdab.com>
 
+  Copyright (C) 2014-2015 Sérgio Martins <iamsergio@gmail.com>
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 2 of the License, or
@@ -24,22 +26,8 @@
 #include <QDBusMessage>
 #include <QDebug>
 
-PidginPlugin::PidginPlugin() : QObject(), PluginInterface()
-  , m_enabled(false)
+PidginPlugin::PidginPlugin() : PluginInterface()
 {
-}
-
-void PidginPlugin::setEnabled(bool enabled)
-{
-    if (enabled != m_enabled) {
-        m_enabled = enabled;
-        update(m_enabled);
-    }
-}
-
-bool PidginPlugin::enabled() const
-{
-    return m_enabled;
 }
 
 void PidginPlugin::update(bool enable)
@@ -55,7 +43,7 @@ void PidginPlugin::update(bool enable)
 
 void PidginPlugin::setTaskStatus(TaskStatus status)
 {
-    if (m_enabled) {
+    if (enabled()) {
         update(status != TaskStarted);
     }
 }
@@ -75,37 +63,7 @@ QObject *PidginPlugin::controller()
     return this;
 }
 
-void PidginPlugin::setQmlEngine(QQmlEngine *)
-{
-
-}
-
-QQuickItem *PidginPlugin::configureItem() const
-{
-    return 0;
-}
-
-void PidginPlugin::setSettings(QSettings *)
-{
-
-}
-
 bool PidginPlugin::enabledByDefault() const
 {
     return true;
-}
-
-void PidginPlugin::setLastError(const QString &lastError)
-{
-    if (!lastError.isEmpty())
-        qWarning() << "PidginPlugin:" << lastError;
-    if (lastError != m_lastError) {
-        m_lastError = lastError;
-        emit lastErrorChanged();
-    }
-}
-
-QString PidginPlugin::lastError() const
-{
-    return m_lastError;
 }

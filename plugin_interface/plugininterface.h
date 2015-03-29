@@ -18,38 +18,59 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _PLUGININTERFACE_H_
-#define _PLUGININTERFACE_H_
+#ifndef PLUGININTERFACE_H
+#define PLUGININTERFACE_H
 
+#include "flow_interface_export.h"
 #include "task.h"
 
+#include <QObject>
 #include <QString>
 #include <QList>
 #include <QtPlugin>
+#include <QSettings>
 
 class Controller;
-class QObject;
 class QQmlEngine;
 class QQuickItem;
 class QSettings;
+class QQmlComponent;
 
-class PluginInterface
+class FLOWINTERFACE_EXPORT PluginInterface : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString lastError READ lastError NOTIFY lastErrorChanged)
 public:
-	typedef QList<PluginInterface*> List;
+    typedef QList<PluginInterface*> List;
+    PluginInterface();
+    virtual ~PluginInterface();
 
-    virtual ~PluginInterface() {}
+    bool enabled() const;
+    void setEnabled(bool enabled);
 
-    virtual bool enabled() const = 0;
-	virtual void setEnabled(bool enabled) = 0;
+    virtual void setSettings(QSettings *);
+    QSettings *settings() const;
+
+    void setQmlEngine(QQmlEngine *);
+    QQmlEngine *qmlEngine() const;
+    QQuickItem* configureItem() const;
+    QString lastError() const;
+    void setLastError(const QString &);
+
+    virtual QQmlComponent *configComponent() const;
+    virtual void update(bool blockDistractions) = 0;
     virtual void setTaskStatus(TaskStatus status) = 0;
     virtual QString text() const = 0;
     virtual QString helpText() const = 0;
     virtual QObject *controller() = 0;
-    virtual void setQmlEngine(QQmlEngine *) = 0;
-    virtual QQuickItem* configureItem() const = 0;
-    virtual void setSettings(QSettings *) = 0;
     virtual bool enabledByDefault() const = 0;
+
+Q_SIGNALS:
+    void lastErrorChanged();
+
+private:
+    class Private;
+    Private *const d;
 };
 
 Q_DECLARE_INTERFACE(PluginInterface, "com.kdab.flow.PluginInterface/v0.9.3")

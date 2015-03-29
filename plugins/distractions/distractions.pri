@@ -1,3 +1,5 @@
+include ("../../global.pri")
+
 INCLUDEPATH += ../../../src/
 INCLUDEPATH += ../../../plugin_interface/
 
