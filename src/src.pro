@@ -30,6 +30,7 @@ OTHER_FILES += qml/AboutPage.qml      \
                qml/config/Hacking.qml \
                qml/config/General.qml \
                qml/config/Plugins.qml \
+               qml/config/Storage.qml \
                qml/config/Tag.qml     \
                qml/config/Tags.qml    \
                qml/config/WebDavSync.qml \

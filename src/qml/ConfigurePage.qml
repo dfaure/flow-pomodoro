@@ -28,16 +28,17 @@ Page {
                     model: ListModel { // TODO: ListElement doesn't accept qsTr
                         ListElement { text: "General" ; source: "config/General.qml"}
                         ListElement { text: "Tags"    ; source: "config/Tags.qml" }
+                        ListElement { text: "Storage" ; source: "config/Storage.qml" }
                         ListElement { text: "WebDAV"  ; source: "config/WebDavSync.qml";}
                         ListElement { text: "Hacking" ; source: "config/Hacking.qml";}
 
                         Component.onCompleted: {
                             if (!_controller.hackingMenuSupported) {
-                                remove(3)
+                                remove(4)
                             }
 
                             if (!_storage.webDAVSyncSupported) {
-                                remove(2)
+                                remove(3)
                             }
                         }
                     }
@@ -65,6 +66,11 @@ Page {
                 Tab {
                     title: qsTr("Distractions")
                     source: "config/Distractions.qml"
+                }
+
+                Tab {
+                    title: qsTr("Storage")
+                    source: "config/Storage.qml"
                 }
 
                 Repeater {
