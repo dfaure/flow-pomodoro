@@ -58,11 +58,6 @@ QString PidginPlugin::helpText() const
     return tr("Disables pidgin systray notifications. You need a patched pidgin, see FAQ.");
 }
 
-QObject *PidginPlugin::controller()
-{
-    return this;
-}
-
 bool PidginPlugin::enabledByDefault() const
 {
     return true;

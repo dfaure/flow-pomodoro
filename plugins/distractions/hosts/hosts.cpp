@@ -93,11 +93,6 @@ QString HostsPlugin::helpText() const
     return help;
 }
 
-QObject *HostsPlugin::controller()
-{
-    return this;
-}
-
 QQmlComponent* HostsPlugin::configComponent() const
 {
     return new QQmlComponent(qmlEngine(), QUrl("qrc:/plugins/hosts/Config.qml"),

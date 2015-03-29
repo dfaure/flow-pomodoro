@@ -51,7 +51,7 @@ public:
     virtual void setSettings(QSettings *);
     QSettings *settings() const;
 
-    void setQmlEngine(QQmlEngine *);
+    virtual void setQmlEngine(QQmlEngine *);
     QQmlEngine *qmlEngine() const;
     QQuickItem* configureItem() const;
     QString lastError() const;
@@ -62,7 +62,6 @@ public:
     virtual void setTaskStatus(TaskStatus status) = 0;
     virtual QString text() const = 0;
     virtual QString helpText() const = 0;
-    virtual QObject *controller() = 0;
     virtual bool enabledByDefault() const = 0;
 
 Q_SIGNALS:

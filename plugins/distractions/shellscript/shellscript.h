@@ -38,15 +38,11 @@ public:
     void setTaskStatus(TaskStatus status) Q_DECL_OVERRIDE;
     QString text() const Q_DECL_OVERRIDE;
     QString helpText() const Q_DECL_OVERRIDE;
-    QObject *controller() Q_DECL_OVERRIDE;
     QQmlComponent* configComponent() const Q_DECL_OVERRIDE;
     bool enabledByDefault() const Q_DECL_OVERRIDE;
 
 public Q_SLOTS:
     void editScript();
-
-Q_SIGNALS:
-    void lastErrorChanged();
 
 private:
     bool checkSanity();

@@ -144,11 +144,6 @@ QString ShellScriptPlugin::helpText() const
     return tr("Executes a shell script to enable/disable distractions.\nYou must create or edit <b>%1</b>. The first argument passed to the script will be <b>allow</b> or <b>disallow</b>.").arg(m_scriptName);
 }
 
-QObject *ShellScriptPlugin::controller()
-{
-    return this;
-}
-
 QQmlComponent *ShellScriptPlugin::configComponent() const
 {
 #if defined(Q_OS_LINUX)

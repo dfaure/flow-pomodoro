@@ -67,7 +67,7 @@ QVariant PluginModel::data(const QModelIndex &index, int role) const
     case HelpTextRole:
         return plugin->helpText();
     case ObjectRole:
-        return QVariant::fromValue<QObject*>(plugin->controller());
+        return QVariant::fromValue<QObject*>(plugin);
     case ConfigItemRole:
         return QVariant::fromValue<QObject*>(plugin->configureItem());
     }

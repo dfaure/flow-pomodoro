@@ -76,11 +76,6 @@ QString KMailPlugin::helpText() const
     return tr("Disables KMail systray notifications and notifier agent popups.");
 }
 
-QObject *KMailPlugin::controller()
-{
-    return this;
-}
-
 bool KMailPlugin::enabledByDefault() const
 {
     return true;
