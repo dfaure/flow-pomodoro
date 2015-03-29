@@ -86,6 +86,7 @@ private:
     Settings *m_settings;
     Controller *m_controller;
     PluginModel *m_distractionPluginModel;
+    PluginModel *m_storagePluginModel;
 #ifndef NO_WEBDAV
     WebDAVSyncer *m_webDavSyncer;
 #endif

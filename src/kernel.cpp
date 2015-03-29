@@ -22,6 +22,7 @@
 #include "jsonstorage.h"
 #include "pluginmodel.h"
 #include "distractionsplugin.h"
+#include "storageplugin.h"
 #include "settings.h"
 #include "circularprogressindicator.h"
 #include "taskfilterproxymodel.h"
@@ -128,6 +129,7 @@ Kernel::Kernel(const RuntimeConfiguration &config, QObject *parent)
     , m_settings(config.settings() ? config.settings() : new Settings(this))
     , m_controller(new Controller(m_qmlEngine->rootContext(), this, m_storage, m_settings, this))
     , m_distractionPluginModel(new PluginModel(this))
+    , m_storagePluginModel(new PluginModel(this))
 #ifndef NO_WEBDAV
     , m_webDavSyncer(new WebDAVSyncer(this))
 #endif
@@ -145,6 +147,7 @@ Kernel::Kernel(const RuntimeConfiguration &config, QObject *parent)
     qmlContext()->setContextProperty("_controller", m_controller);
     qmlContext()->setContextProperty("_storage", m_storage);
     qmlContext()->setContextProperty("_distractionsPluginModel", m_distractionPluginModel);
+    qmlContext()->setContextProperty("_storagePluginModel", m_storagePluginModel);
     qmlContext()->setContextProperty("_loadManager", m_controller->loadManager());
     qmlContext()->setContextProperty("_settings", m_settings);
 #ifndef NO_WEBDAV
@@ -277,7 +280,7 @@ void Kernel::loadPlugins()
     if (Utils::isMobile())
         return;
 
-    static const QStringList pluginTypes = QStringList() << "distractions";
+    static const QStringList pluginTypes = QStringList() << "distractions" << "storage";
     QObjectList plugins;
 
 #ifdef FLOW_STATIC_BUILD
@@ -325,9 +328,12 @@ void Kernel::loadPlugins()
             continue;
 
         DistractionsPlugin *distractionPlugin = qobject_cast<DistractionsPlugin*>(pluginObject);
+        StoragePlugin *storagePlugin = qobject_cast<StoragePlugin*>(pluginObject);
 
-        if (distractionPlugin)
-            distractionPlugin->setTaskStatus(TaskStopped);
+        Q_ASSERT(storagePlugin || distractionPlugin);
+        if (!storagePlugin && !distractionPlugin)
+            continue;
+
         bool enabledByDefault = pluginInterface->enabledByDefault();
         const QString pluginName = pluginObject->metaObject()->className();
         m_settings->beginGroup("plugins");
@@ -336,11 +342,19 @@ void Kernel::loadPlugins()
         pluginInterface->setEnabled(enabled);
         pluginInterface->setSettings(m_settings);
         pluginInterface->setQmlEngine(m_qmlEngine);
-        m_distractionPluginModel->addPlugin(pluginInterface);
+
+        if (distractionPlugin) {
+            distractionPlugin->setTaskStatus(TaskStopped);
+            m_distractionPluginModel->addPlugin(distractionPlugin);
+        } else if (storagePlugin) {
+            m_storagePluginModel->addPlugin(storagePlugin);
+        }
     }
 
-    const int count = m_distractionPluginModel->rowCount();
-    qDebug() << "Loaded" << count << (count == 1 ? "plugin" : "plugins");
+    const int distractionCount = m_distractionPluginModel->rowCount();
+    const int storageCount = m_storagePluginModel->rowCount();
+    qDebug() << "Loaded" << distractionCount << "distraction" << (distractionCount == 1 ? "plugin" : "plugins")
+             << "and" << storageCount << "storage" << (storageCount == 1 ? "plugin" : "plugins");
 }
 
 void Kernel::onTaskStatusChanged()
