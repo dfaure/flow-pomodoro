@@ -4,6 +4,8 @@
   Copyright (C) 2013 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
   Author: Sérgio Martins <sergio.martins@kdab.com>
 
+  Copyright (C) 2015 Sérgio Martins <iamsergio@gmail.com>
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 2 of the License, or
@@ -22,7 +24,6 @@
 #define PLUGININTERFACE_H
 
 #include "flow_interface_export.h"
-#include "task.h"
 
 #include <QObject>
 #include <QString>
@@ -58,14 +59,14 @@ public:
     void setLastError(const QString &);
 
     virtual QQmlComponent *configComponent() const;
-    virtual void update(bool blockDistractions) = 0;
-    virtual void setTaskStatus(TaskStatus status) = 0;
+
     virtual QString text() const = 0;
     virtual QString helpText() const = 0;
     virtual bool enabledByDefault() const = 0;
 
 Q_SIGNALS:
     void lastErrorChanged();
+    void enabledChanged(bool enabled);
 
 private:
     class Private;

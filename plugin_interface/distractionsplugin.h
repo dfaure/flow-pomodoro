@@ -1,10 +1,7 @@
 /*
   This file is part of Flow.
 
-  Copyright (C) 2013 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
-  Author: Sérgio Martins <sergio.martins@kdab.com>
-
-  Copyright (C) 2014-2015 Sérgio Martins <iamsergio@gmail.com>
+  Copyright (C) 2015 Sérgio Martins <iamsergio@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,28 +17,19 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PIDGIN_PLUGIN_H
-#define PIDGIN_PLUGIN_H
+#ifndef DISTRACTIONS_PLUGIN_H
+#define DISTRACTIONS_PLUGIN_H
 
-#include "distractionsplugin.h"
+#include "plugininterface.h"
+
 #include "task.h"
 
-class PidginPlugin : public DistractionsPlugin
-{
+class FLOWINTERFACE_EXPORT DistractionsPlugin : public PluginInterface {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginInterface/v0.9.3")
-    Q_INTERFACES(PluginInterface)
-
 public:
-    PidginPlugin();
-
-    void setTaskStatus(TaskStatus status) Q_DECL_OVERRIDE;
-    QString text() const Q_DECL_OVERRIDE;
-    QString helpText() const Q_DECL_OVERRIDE;
-    bool enabledByDefault() const Q_DECL_OVERRIDE;
-
-private:
-    void update(bool enable) Q_DECL_OVERRIDE;
+    DistractionsPlugin();
+    virtual void update(bool blockDistractions) = 0;
+    virtual void setTaskStatus(TaskStatus status) = 0;
 };
 
 #endif

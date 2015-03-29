@@ -26,7 +26,7 @@
 #include <QDBusMessage>
 #include <QDebug>
 
-PidginPlugin::PidginPlugin() : PluginInterface()
+PidginPlugin::PidginPlugin() : DistractionsPlugin()
 {
 }
 

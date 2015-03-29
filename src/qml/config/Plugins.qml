@@ -17,11 +17,11 @@ Item {
         wrapMode: Text.WordWrap
         font.pixelSize: 13 * _controller.dpiFactor
         text: qsTr("Plugins disable certain distractions when a task is running. Distractions are re-enabled when the task stops.") +
-              "\n" + (_pluginModel.count > 0 ? qsTr("The following plugins were found:") : "")
+              "\n" + (_distractionsPluginModel.count > 0 ? qsTr("The following plugins were found:") : "")
     }
 
     Text {
-        visible: _pluginModel.count === 0
+        visible: _distractionsPluginModel.count === 0
         anchors.centerIn: parent
         text: qsTr("no plugins were found")
         horizontalAlignment: Text.AlignHCenter
@@ -39,7 +39,7 @@ Item {
         anchors.right: parent.right
         boundsBehavior: Flickable.StopAtBounds
 
-        model: _pluginModel
+        model: _distractionsPluginModel
         height: 60
         spacing: 5 * _controller.dpiFactor
         clip: true
@@ -89,7 +89,7 @@ Item {
                     anchors.topMargin: 2 * _controller.dpiFactor
                     checked: enabledRole
                     onCheckedChanged: {
-                        _pluginModel.setPluginEnabled(checked, index)
+                        _distractionsPluginModel.setPluginEnabled(checked, index)
                     }
                 }
             }

@@ -78,14 +78,14 @@ private Q_SLOTS:
 private:
     void setupDayChangedTimer(const QDateTime &currentDateTime);
     void loadPlugins();
-    void notifyPlugins(TaskStatus newStatus);
+    void notifyDistractionPlugins(TaskStatus newStatus);
 
     RuntimeConfiguration m_runtimeConfiguration;
     Storage *m_storage;
     QQmlEngine *m_qmlEngine;
     Settings *m_settings;
     Controller *m_controller;
-    PluginModel *m_pluginModel;
+    PluginModel *m_distractionPluginModel;
 #ifndef NO_WEBDAV
     WebDAVSyncer *m_webDavSyncer;
 #endif

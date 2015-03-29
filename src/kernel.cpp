@@ -21,7 +21,7 @@
 #include "controller.h"
 #include "jsonstorage.h"
 #include "pluginmodel.h"
-#include "plugininterface.h"
+#include "distractionsplugin.h"
 #include "settings.h"
 #include "circularprogressindicator.h"
 #include "taskfilterproxymodel.h"
@@ -127,7 +127,7 @@ Kernel::Kernel(const RuntimeConfiguration &config, QObject *parent)
     , m_qmlEngine(new QQmlEngine(0)) // leak the engine, no point in wasting shutdown time. Also we get a qmldebug server crash if it's parented to qApp, which Kernel is
     , m_settings(config.settings() ? config.settings() : new Settings(this))
     , m_controller(new Controller(m_qmlEngine->rootContext(), this, m_storage, m_settings, this))
-    , m_pluginModel(new PluginModel(this))
+    , m_distractionPluginModel(new PluginModel(this))
 #ifndef NO_WEBDAV
     , m_webDavSyncer(new WebDAVSyncer(this))
 #endif
@@ -144,7 +144,7 @@ Kernel::Kernel(const RuntimeConfiguration &config, QObject *parent)
     registerQmlTypes();
     qmlContext()->setContextProperty("_controller", m_controller);
     qmlContext()->setContextProperty("_storage", m_storage);
-    qmlContext()->setContextProperty("_pluginModel", m_pluginModel);
+    qmlContext()->setContextProperty("_distractionsPluginModel", m_distractionPluginModel);
     qmlContext()->setContextProperty("_loadManager", m_controller->loadManager());
     qmlContext()->setContextProperty("_settings", m_settings);
 #ifndef NO_WEBDAV
@@ -211,11 +211,14 @@ WebDAVSyncer *Kernel::webdavSyncer() const
 }
 #endif
 
-void Kernel::notifyPlugins(TaskStatus newStatus)
+void Kernel::notifyDistractionPlugins(TaskStatus newStatus)
 {
-    PluginInterface::List plugins = m_pluginModel->plugins();
+    PluginInterface::List plugins = m_distractionPluginModel->plugins();
     foreach (PluginInterface *plugin, plugins) {
-        plugin->setTaskStatus(newStatus);
+        DistractionsPlugin *distractionsPlugin = qobject_cast<DistractionsPlugin*>(plugin);
+        Q_ASSERT(distractionsPlugin);
+        if (distractionsPlugin)
+            distractionsPlugin->setTaskStatus(newStatus);
     }
 }
 
@@ -320,7 +323,11 @@ void Kernel::loadPlugins()
         auto *pluginInterface = qobject_cast<PluginInterface*>(pluginObject);
         if (!pluginInterface)
             continue;
-        pluginInterface->setTaskStatus(TaskStopped);
+
+        DistractionsPlugin *distractionPlugin = qobject_cast<DistractionsPlugin*>(pluginObject);
+
+        if (distractionPlugin)
+            distractionPlugin->setTaskStatus(TaskStopped);
         bool enabledByDefault = pluginInterface->enabledByDefault();
         const QString pluginName = pluginObject->metaObject()->className();
         m_settings->beginGroup("plugins");
@@ -329,16 +336,16 @@ void Kernel::loadPlugins()
         pluginInterface->setEnabled(enabled);
         pluginInterface->setSettings(m_settings);
         pluginInterface->setQmlEngine(m_qmlEngine);
-        m_pluginModel->addPlugin(pluginInterface);
+        m_distractionPluginModel->addPlugin(pluginInterface);
     }
 
-    const int count = m_pluginModel->rowCount();
+    const int count = m_distractionPluginModel->rowCount();
     qDebug() << "Loaded" << count << (count == 1 ? "plugin" : "plugins");
 }
 
 void Kernel::onTaskStatusChanged()
 {
-    notifyPlugins(m_controller->currentTask()->status());
+    notifyDistractionPlugins(m_controller->currentTask()->status());
 }
 
 void Kernel::checkDayChanged()

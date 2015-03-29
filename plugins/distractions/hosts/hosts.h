@@ -20,10 +20,10 @@
 #ifndef HOSTS_PLUGIN_H
 #define HOSTS_PLUGIN_H
 
-#include "plugininterface.h"
+#include "distractionsplugin.h"
 #include "task.h"
 
-class HostsPlugin : public PluginInterface
+class HostsPlugin : public DistractionsPlugin
 {
     Q_OBJECT
     Q_PROPERTY(QString hosts READ hosts WRITE setHosts NOTIFY hostsChanged)

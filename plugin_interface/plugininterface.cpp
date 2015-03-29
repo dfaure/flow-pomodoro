@@ -53,7 +53,7 @@ void PluginInterface::setEnabled(bool enabled)
 {
     if (enabled != d->m_enabled) {
         d->m_enabled = enabled;
-        update(d->m_enabled);
+        emit enabledChanged(d->m_enabled);
     }
 }
 

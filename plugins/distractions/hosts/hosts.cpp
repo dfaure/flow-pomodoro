@@ -64,7 +64,7 @@ static QString hostsFileName()
 #endif
 }
 
-HostsPlugin::HostsPlugin() : PluginInterface()
+HostsPlugin::HostsPlugin() : DistractionsPlugin()
 {
     // Fixes crash in static mode, because qqmlimport calls QPluginLoader::staticPlugins() before us.
     moveToThread(qApp->thread());

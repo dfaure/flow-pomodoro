@@ -76,10 +76,8 @@ private:
     QMutex *m_mutex;
 };
 
-ShellScriptPlugin::ShellScriptPlugin() : PluginInterface()
+ShellScriptPlugin::ShellScriptPlugin() : DistractionsPlugin()
   , m_allowingDistractions(true)
-  , m_qmlEngine(0)
-  , m_configItem(0)
 {
     m_scriptName = "shell_script_plugin";
     const QString suffix =

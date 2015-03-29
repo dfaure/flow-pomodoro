@@ -26,7 +26,7 @@
 #include <QDBusMessage>
 #include <QDebug>
 
-KMailPlugin::KMailPlugin() : PluginInterface()
+KMailPlugin::KMailPlugin() : DistractionsPlugin()
 {
 }
 

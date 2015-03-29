@@ -1,4 +1,4 @@
-set(SRCS plugininterface.cpp)
+set(SRCS distractionsplugin.cpp plugininterface.cpp)
 
 add_definitions(-DBUILDING_FLOW_PLUGIN_INTERFACE)
 

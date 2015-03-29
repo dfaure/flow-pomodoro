@@ -1,8 +1,11 @@
 TEMPLATE = lib
 TARGET = flowplugininterface
 
-HEADERS += plugininterface.h
-SOURCES += plugininterface.cpp
+HEADERS += distractionsplugin.h \
+           plugininterface.h
+
+SOURCES += distractionsplugin.cpp \
+           plugininterface.cpp
 
 INCLUDEPATH += $$PWD/../src/
 DEFINES += BUILDING_FLOW_PLUGIN_INTERFACE

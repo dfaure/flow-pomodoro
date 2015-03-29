@@ -23,10 +23,10 @@
 #ifndef KMAIL_PLUGIN_H
 #define KMAIL_PLUGIN_H
 
-#include "plugininterface.h"
+#include "distractionsplugin.h"
 #include "task.h"
 
-class KMailPlugin : public PluginInterface
+class KMailPlugin : public DistractionsPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginInterface/v0.9.3")
