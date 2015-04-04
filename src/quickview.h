@@ -18,8 +18,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _QUICK_WINDOW_H_
-#define _QUICK_WINDOW_H_
+#ifndef QUICK_WINDOW_H
+#define QUICK_WINDOW_H
+
+#include "flow_export.h"
 
 #include <QQuickView>
 #include <QUrl>
@@ -28,7 +30,7 @@ class Controller;
 class Kernel;
 class QKeyEvent;
 
-class QuickView : public QQuickView {
+class FLOW_EXPORT QuickView : public QQuickView {
     Q_OBJECT
     Q_PROPERTY(int contractedHeight READ contractedHeight WRITE setContractedHeight NOTIFY contractedHeightChanged)
     Q_PROPERTY(int contractedWidth READ contractedWidth WRITE setContractedWidth NOTIFY contractedWidthChanged)

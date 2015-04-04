@@ -11,7 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(${Qt5Core_INCLUDES})
 include_directories(${Qt5Gui_INCLUDES})
-include_directories("${PROJECT_SOURCE_DIR}/plugin_interface/")
+include_directories("${PROJECT_SOURCE_DIR}/src/")
 
 set(CMAKE_CXX_FLAGS "${Qt5Gui_EXECUTABLE_COMPILE_FLAGS}")
 
@@ -27,9 +27,9 @@ else()
 endif()
 
 
-add_subdirectory(plugin_interface)
 add_subdirectory(src)
 add_subdirectory(plugins)
+add_subdirectory(flow_main)
 
 set(CPACK_PACKAGE_VERSION "1.1.0")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")

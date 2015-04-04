@@ -21,7 +21,7 @@
 #ifndef PLUGIN_MODEL_H
 #define PLUGIN_MODEL_H
 
-#include "plugininterface.h"
+#include "pluginbase.h"
 
 #include <QAbstractListModel>
 
@@ -47,9 +47,9 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
     int count() const;
-    PluginInterface *at(int index) const; //shortcut
-    void addPlugin(PluginInterface *plugin);
-    PluginInterface::List plugins() const;
+    PluginBase *at(int index) const; //shortcut
+    void addPlugin(PluginBase *plugin);
+    PluginBase::List plugins() const;
 
     Q_INVOKABLE void setPluginEnabled(bool enabled, int index);
 
@@ -57,7 +57,7 @@ Q_SIGNALS:
     void countChanged();
 
 private:
-    PluginInterface::List m_plugins;
+    PluginBase::List m_plugins;
     Kernel *m_kernel;
 };
 

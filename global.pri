@@ -16,9 +16,11 @@ win32:!mingw {
     LIBS += Shell32.lib
 }
 
+qtHaveModule(widgets):!android:!blackberry:!ios {
+    QT += widgets
+}
+
 INCLUDEPATH += $$PWD/src
-INCLUDEPATH += $$PWD/plugin_interface
-LIBS += -lflowplugininterface -L $$shadowed($$PWD)
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 

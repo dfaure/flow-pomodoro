@@ -101,7 +101,7 @@ QQmlComponent* HostsPlugin::configComponent() const
 
 void HostsPlugin::setSettings(QSettings *settings)
 {
-    PluginInterface::setSettings(settings);
+    PluginBase::setSettings(settings);
 
     settings->beginGroup("hosts");
     bool firstRun = settings->value("firstRun", /*default=*/ true).toBool();

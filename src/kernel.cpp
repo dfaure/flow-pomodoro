@@ -216,8 +216,8 @@ WebDAVSyncer *Kernel::webdavSyncer() const
 
 void Kernel::notifyDistractionPlugins(TaskStatus newStatus)
 {
-    PluginInterface::List plugins = m_distractionPluginModel->plugins();
-    foreach (PluginInterface *plugin, plugins) {
+    PluginBase::List plugins = m_distractionPluginModel->plugins();
+    foreach (PluginBase *plugin, plugins) {
         DistractionsPlugin *distractionsPlugin = qobject_cast<DistractionsPlugin*>(plugin);
         Q_ASSERT(distractionsPlugin);
         if (distractionsPlugin)
@@ -323,8 +323,8 @@ void Kernel::loadPlugins()
 #endif
 
     foreach (QObject *pluginObject, plugins) {
-        auto *pluginInterface = qobject_cast<PluginInterface*>(pluginObject);
-        if (!pluginInterface)
+        auto *plugin = qobject_cast<PluginBase*>(pluginObject);
+        if (!plugin)
             continue;
 
         DistractionsPlugin *distractionPlugin = qobject_cast<DistractionsPlugin*>(pluginObject);
@@ -334,14 +334,14 @@ void Kernel::loadPlugins()
         if (!storagePlugin && !distractionPlugin)
             continue;
 
-        bool enabledByDefault = pluginInterface->enabledByDefault();
+        bool enabledByDefault = plugin->enabledByDefault();
         const QString pluginName = pluginObject->metaObject()->className();
         m_settings->beginGroup("plugins");
         const bool enabled = m_settings->value(pluginName + ".enabled", /**defaul=*/ enabledByDefault).toBool();
         m_settings->endGroup();
-        pluginInterface->setEnabled(enabled);
-        pluginInterface->setSettings(m_settings);
-        pluginInterface->setQmlEngine(m_qmlEngine);
+        plugin->setEnabled(enabled);
+        plugin->setSettings(m_settings);
+        plugin->setQmlEngine(m_qmlEngine);
 
         if (distractionPlugin) {
             distractionPlugin->setTaskStatus(TaskStopped);

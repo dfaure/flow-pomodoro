@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
-SUBDIRS += plugin_interface plugins src
+SUBDIRS += src plugins flow_main
 
 CONFIG += ordered
 

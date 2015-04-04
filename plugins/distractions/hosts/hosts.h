@@ -27,8 +27,8 @@ class HostsPlugin : public DistractionsPlugin
 {
     Q_OBJECT
     Q_PROPERTY(QString hosts READ hosts WRITE setHosts NOTIFY hostsChanged)
-    Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginInterface/v0.9.3")
-    Q_INTERFACES(PluginInterface)
+    Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginBase/v1.2")
+    Q_INTERFACES(PluginBase)
 
 public:
     HostsPlugin();

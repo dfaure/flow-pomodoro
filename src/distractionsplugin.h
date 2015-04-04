@@ -17,15 +17,19 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FLOW_INTERFACE_EXPORT_H
-#define FLOW_INTERFACE_EXPORT_H
+#ifndef DISTRACTIONS_PLUGIN_H
+#define DISTRACTIONS_PLUGIN_H
 
-#include <QtCore/qglobal.h>
+#include "pluginbase.h"
 
-#if defined(BUILDING_FLOW_PLUGIN_INTERFACE)
-#  define FLOWINTERFACE_EXPORT Q_DECL_EXPORT
-#else
-#  define FLOWINTERFACE_EXPORT Q_DECL_IMPORT
-#endif
+#include "task.h"
+
+class FLOW_EXPORT DistractionsPlugin : public PluginBase {
+    Q_OBJECT
+public:
+    DistractionsPlugin();
+    virtual void update(bool blockDistractions) = 0;
+    virtual void setTaskStatus(TaskStatus status) = 0;
+};
 
 #endif

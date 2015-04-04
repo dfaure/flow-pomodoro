@@ -20,10 +20,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PLUGININTERFACE_H
-#define PLUGININTERFACE_H
+#ifndef PLUGINBASE_H
+#define PLUGINBASE_H
 
-#include "flow_interface_export.h"
+#include "flow_export.h"
 
 #include <QObject>
 #include <QString>
@@ -37,14 +37,14 @@ class QQuickItem;
 class QSettings;
 class QQmlComponent;
 
-class FLOWINTERFACE_EXPORT PluginInterface : public QObject
+class FLOW_EXPORT PluginBase : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString lastError READ lastError NOTIFY lastErrorChanged)
 public:
-    typedef QList<PluginInterface*> List;
-    PluginInterface();
-    virtual ~PluginInterface();
+    typedef QList<PluginBase*> List;
+    PluginBase();
+    virtual ~PluginBase();
 
     bool enabled() const;
     void setEnabled(bool enabled);
@@ -52,7 +52,7 @@ public:
     virtual void setSettings(QSettings *);
     QSettings *settings() const;
 
-    virtual void setQmlEngine(QQmlEngine *);
+    void setQmlEngine(QQmlEngine *);
     QQmlEngine *qmlEngine() const;
     QQuickItem* configureItem() const;
     QString lastError() const;
@@ -73,6 +73,6 @@ private:
     Private *const d;
 };
 
-Q_DECLARE_INTERFACE(PluginInterface, "com.kdab.flow.PluginInterface/v0.9.3")
+Q_DECLARE_INTERFACE(PluginBase, "com.kdab.flow.PluginBase/v1.2")
 
 #endif

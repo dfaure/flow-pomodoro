@@ -17,19 +17,9 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DISTRACTIONS_PLUGIN_H
-#define DISTRACTIONS_PLUGIN_H
+#include "distractionsplugin.h"
 
-#include "plugininterface.h"
-
-#include "task.h"
-
-class FLOWINTERFACE_EXPORT DistractionsPlugin : public PluginInterface {
-    Q_OBJECT
-public:
-    DistractionsPlugin();
-    virtual void update(bool blockDistractions) = 0;
-    virtual void setTaskStatus(TaskStatus status) = 0;
-};
-
-#endif
+DistractionsPlugin::DistractionsPlugin() : PluginBase()
+{
+    connect(this, &PluginBase::enabledChanged, this, &DistractionsPlugin::update);
+}

@@ -1,11 +1,7 @@
 include ("../global.pri")
 
-TEMPLATE = app
-TARGET = flow
-
-qtHaveModule(widgets):!android:!blackberry:!ios {
-    QT += widgets
-}
+TEMPLATE = lib
+TARGET = flowPrivate
 
 !android:!blackberry:!ios {
     QT += dbus
@@ -14,14 +10,8 @@ qtHaveModule(widgets):!android:!blackberry:!ios {
     DEFINES += FLOW_DBUS
 }
 
-static {
-    DEFINES += FLOW_STATIC_BUILD
-    LIBS += -lshellscript -lhosts
-    LIBPATH += ../plugins/
-}
-
 include("src.pri")
-SOURCES += main.cpp
+DEFINES += BUILDING_FLOW_LIBRARY
 
 OTHER_FILES += qml/AboutPage.qml      \
                qml/Choice.qml \
@@ -95,5 +85,5 @@ osx {
 DESTDIR = ../
 
 # For make INSTAL_ROOT=prefix install
-target.path = /bin/
+target.path = /lib/
 INSTALLS += target

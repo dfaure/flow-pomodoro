@@ -20,9 +20,9 @@
 #ifndef STORAGE_PLUGIN_H
 #define STORAGE_PLUGIN_H
 
-#include "plugininterface.h"
+#include "pluginbase.h"
 
-class FLOWINTERFACE_EXPORT StoragePlugin : public PluginInterface {
+class FLOW_EXPORT StoragePlugin : public PluginBase {
     Q_OBJECT
 public:
     StoragePlugin();

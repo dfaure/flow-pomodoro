@@ -1,24 +1,26 @@
 
-set(flow_SRC
+set(flowPrivate_SRC
     checkabletagmodel.cpp
     circularprogressindicator.cpp
     checkbox.cpp
     controller.cpp
+    distractionsplugin.cpp
     duedate.cpp
     extendedtagsmodel.cpp
     genericlistmodel.h
     jsonstorage.cpp
     kernel.cpp
     loadmanager.cpp
+    pluginbase.cpp
     pluginmodel.cpp
     quickview.cpp
-    main.cpp
     nonemptytagfilterproxy.cpp
     runtimeconfiguration.cpp
     settings.cpp
     sortedtagsmodel.cpp
     sortedtaskcontextmenumodel.cpp
     storage.cpp
+    storageplugin.cpp
     syncable.cpp
     tag.cpp
     tagref.cpp
@@ -31,11 +33,12 @@ set(flow_SRC
 
 qt5_add_resources(RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources.qrc)
 
-add_executable(flow ${flow_SRC} ${RESOURCES})
+add_definitions(-DBUILDING_FLOW_LIBRARY)
 add_definitions(-DNO_WEBDAV)
 
-target_link_libraries(flow flowplugininterface)
+add_library(flowPrivate SHARED ${flowPrivate_SRC} ${RESOURCES})
+set_target_properties(flowPrivate PROPERTIES SOVERSION 1.2.0)
 
-qt5_use_modules(flow Gui Quick DBus Widgets)
+qt5_use_modules(flowPrivate Gui Quick DBus Widgets)
 
-install(TARGETS flow DESTINATION bin)
+install(TARGETS flowPrivate DESTINATION lib)

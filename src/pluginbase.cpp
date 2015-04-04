@@ -17,18 +17,19 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugininterface.h"
+#include "pluginbase.h"
 
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QQuickItem>
 
-class PluginInterface::Private
+class PluginBase::Private
 {
 public:
     Private()
         : m_enabled(false)
         , m_settings(0)
+        , m_qmlEngine(nullptr)
     {
     }
 
@@ -40,16 +41,16 @@ public:
 };
 
 
-PluginInterface::PluginInterface() : d(new Private())
+PluginBase::PluginBase() : d(new Private())
 {
 }
 
-PluginInterface::~PluginInterface()
+PluginBase::~PluginBase()
 {
     delete d;
 }
 
-void PluginInterface::setEnabled(bool enabled)
+void PluginBase::setEnabled(bool enabled)
 {
     if (enabled != d->m_enabled) {
         d->m_enabled = enabled;
@@ -57,33 +58,33 @@ void PluginInterface::setEnabled(bool enabled)
     }
 }
 
-void PluginInterface::setSettings(QSettings *settings)
+void PluginBase::setSettings(QSettings *settings)
 {
     Q_ASSERT(!d->m_settings && settings);
     d->m_settings = settings;
 }
 
-QSettings* PluginInterface::settings() const
+QSettings* PluginBase::settings() const
 {
     return d->m_settings;
 }
 
-bool PluginInterface::enabled() const
+bool PluginBase::enabled() const
 {
     return d->m_enabled;
 }
 
-QQuickItem *PluginInterface::configureItem() const
+QQuickItem *PluginBase::configureItem() const
 {
     return d->m_configItem;
 }
 
-QString PluginInterface::lastError() const
+QString PluginBase::lastError() const
 {
     return d->m_lastError;
 }
 
-void PluginInterface::setLastError(const QString &lastError)
+void PluginBase::setLastError(const QString &lastError)
 {
     if (!lastError.isEmpty())
         qWarning() << text() << lastError;
@@ -93,14 +94,19 @@ void PluginInterface::setLastError(const QString &lastError)
     }
 }
 
-QQmlComponent *PluginInterface::configComponent() const
+QQmlComponent *PluginBase::configComponent() const
 {
     return 0;
 }
 
-void PluginInterface::setQmlEngine(QQmlEngine *engine)
+void PluginBase::setQmlEngine(QQmlEngine *engine)
 {
-    Q_ASSERT(!d->m_qmlEngine && engine);
+    if (d->m_qmlEngine || !engine) {
+        qWarning() << "Invalid setQmlEngine call" << engine << d->m_qmlEngine;
+        Q_ASSERT(false);
+        return;
+    }
+
     d->m_qmlEngine = engine;
 
     QQmlComponent *component = configComponent();
@@ -122,7 +128,7 @@ void PluginInterface::setQmlEngine(QQmlEngine *engine)
     }
 }
 
-QQmlEngine *PluginInterface::qmlEngine() const
+QQmlEngine *PluginBase::qmlEngine() const
 {
     return d->m_qmlEngine;
 }

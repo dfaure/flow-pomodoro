@@ -19,6 +19,6 @@
 
 #include "storageplugin.h"
 
-StoragePlugin::StoragePlugin() : PluginInterface()
+StoragePlugin::StoragePlugin() : PluginBase()
 {
 }

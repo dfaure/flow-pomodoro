@@ -22,6 +22,7 @@
 
 #include "task.h"
 #include "runtimeconfiguration.h"
+#include "flow_export.h"
 
 #include <QObject>
 #include <QTimer>
@@ -40,7 +41,7 @@ class QUrl;
 #include <QSystemTrayIcon>
 #endif
 
-class Kernel : public QObject
+class FLOW_EXPORT Kernel : public QObject
 {
     Q_OBJECT
 public:

@@ -25,8 +25,8 @@
 class TextFilePlugin : public StoragePlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginInterface/v0.9.3")
-    Q_INTERFACES(PluginInterface)
+    Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginBase/v1.2")
+    Q_INTERFACES(PluginBase)
 
 public:
     TextFilePlugin();

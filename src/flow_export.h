@@ -17,9 +17,15 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "distractionsplugin.h"
+#ifndef FLOW_EXPORT_H
+#define FLOW_EXPORT_H
 
-DistractionsPlugin::DistractionsPlugin() : PluginInterface()
-{
-    connect(this, &PluginInterface::enabledChanged, this, &DistractionsPlugin::update);
-}
+#include <QtCore/qglobal.h>
+
+#if defined(BUILDING_FLOW_LIBRARY)
+#  define FLOW_EXPORT Q_DECL_EXPORT
+#else
+#  define FLOW_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif

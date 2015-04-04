@@ -2,7 +2,7 @@ Makefile
 moc*
 *moc
 *.o
-flow
+/flow/flow
 *.pro.user
 qrc*cpp
 *so
@@ -54,4 +54,3 @@ lib*.a
 /tests/unit-test-settings.ini
 *.qrc.depends
 install_manifest.txt
-libflowplugininterface.so.*

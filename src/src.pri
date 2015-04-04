@@ -4,12 +4,14 @@ SOURCES += $$PWD/checkabletagmodel.cpp \
            $$PWD/circularprogressindicator.cpp \
            $$PWD/checkbox.cpp \
            $$PWD/controller.cpp  \
+           $$PWD/distractionsplugin.cpp \
            $$PWD/duedate.cpp \
            $$PWD/extendedtagsmodel.cpp \
            $$PWD/jsonstorage.cpp \
            $$PWD/kernel.cpp \
            $$PWD/loadmanager.cpp \
            $$PWD/nonemptytagfilterproxy.cpp \
+           $$PWD/pluginbase.cpp \
            $$PWD/pluginmodel.cpp \
            $$PWD/quickview.cpp \
            $$PWD/runtimeconfiguration.cpp \
@@ -17,6 +19,7 @@ SOURCES += $$PWD/checkabletagmodel.cpp \
            $$PWD/sortedtagsmodel.cpp \
            $$PWD/sortedtaskcontextmenumodel.cpp \
            $$PWD/storage.cpp \
+           $$PWD/storageplugin.cpp \
            $$PWD/syncable.cpp \
            $$PWD/tag.cpp \
            $$PWD/tagref.cpp \
@@ -30,13 +33,14 @@ HEADERS += $$PWD/checkabletagmodel.h \
            $$PWD/checkbox.h \
            $$PWD/circularprogressindicator.h \
            $$PWD/controller.h \
+           $$PWD/distractionsplugin.h \
            $$PWD/duedate.h \
            $$PWD/extendedtagsmodel.h \
            $$PWD/jsonstorage.h      \
            $$PWD/kernel.h \
            $$PWD/loadmanager.h \
            $$PWD/genericlistmodel.h \
-           $$PWD/plugininterface.h \
+           $$PWD/pluginbase.h \
            $$PWD/pluginmodel.h \
            $$PWD/quickview.h \
            $$PWD/nonemptytagfilterproxy.h \
@@ -45,6 +49,7 @@ HEADERS += $$PWD/checkabletagmodel.h \
            $$PWD/sortedtagsmodel.h \
            $$PWD/sortedtaskcontextmenumodel.h \
            $$PWD/storage.h \
+           $$PWD/storageplugin.h \
            $$PWD/syncable.h \
            $$PWD/tag.h \
            $$PWD/tagref.h \

@@ -57,7 +57,7 @@ QVariant PluginModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    PluginInterface *plugin = m_plugins[index.row()];
+    PluginBase *plugin = m_plugins[index.row()];
 
     switch (role) {
     case TextRole:
@@ -80,20 +80,20 @@ int PluginModel::count() const
     return m_plugins.count();
 }
 
-PluginInterface *PluginModel::at(int index) const
+PluginBase *PluginModel::at(int index) const
 {
     Q_ASSERT(index >= 0 && index < count());
     return m_plugins.at(index);
 }
 
-void PluginModel::addPlugin(PluginInterface *plugin)
+void PluginModel::addPlugin(PluginBase *plugin)
 {
     beginInsertRows(QModelIndex(), m_plugins.count(), m_plugins.count());
     m_plugins.append(plugin);
     endInsertRows();
 }
 
-PluginInterface::List PluginModel::plugins() const
+PluginBase::List PluginModel::plugins() const
 {
     return m_plugins;
 }
@@ -101,7 +101,7 @@ PluginInterface::List PluginModel::plugins() const
 void PluginModel::setPluginEnabled(bool enabled, int i)
 {
     Q_ASSERT(i >= 0 && i < count());
-    PluginInterface *plugin = m_plugins.at(i);
+    PluginBase *plugin = m_plugins.at(i);
     plugin->setEnabled(enabled);
     auto *pluginObj = dynamic_cast<QObject*>(plugin);
     if (!pluginObj) {

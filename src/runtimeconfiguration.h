@@ -20,11 +20,13 @@
 #ifndef RUNTIMECONFIGURATION_H
 #define RUNTIMECONFIGURATION_H
 
+#include "flow_export.h"
+
 #include <QString>
 
 class Settings;
 
-class RuntimeConfiguration
+class FLOW_EXPORT RuntimeConfiguration
 {
 public:
     RuntimeConfiguration();
