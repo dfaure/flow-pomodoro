@@ -30,6 +30,7 @@
 #include "tag.h"
 #include "settings.h"
 #include "utils.h"
+#include "logging.h"
 #include "checkbox.h"
 #include "loadmanager.h"
 #include "webdavsyncer.h"
@@ -59,6 +60,8 @@
 Q_IMPORT_PLUGIN(ShellScriptPlugin)
 Q_IMPORT_PLUGIN(HostsPlugin)
 #endif
+
+Q_LOGGING_CATEGORY(LOG_PLUGINS, "flow.plugins")
 
 static void registerQmlTypes()
 {
@@ -311,11 +314,15 @@ void Kernel::loadPlugins()
             foreach (const QString &fileName, pluginsDir.entryList(QDir::Files)) {
                 if (acceptedFileNames.contains(fileName)) // Don't load plugins more than once.
                     continue;
-                QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
+                QString absolutePath = pluginsDir.absoluteFilePath(fileName);
+                QPluginLoader loader(absolutePath);
                 QObject *pluginObject = loader.instance();
                 if (pluginObject) {
+                    qCDebug(LOG_PLUGINS) << "Found plugin" << absolutePath;
                     plugins << pluginObject;
                     acceptedFileNames << fileName;
+                } else {
+                    qCDebug(LOG_PLUGINS) << "Ignoring plugin" << absolutePath;
                 }
             }
         }

@@ -44,6 +44,7 @@ typedef QGuiApplication Application;
 #include <QTranslator>
 #include <QScreen>
 #include <QDir>
+#include <QLoggingCategory>
 
 void initDBus(Kernel *kernel)
 {
@@ -167,6 +168,8 @@ int main(int argc, char *argv[])
     Utils::printTimeInfo("main: created QApplication");
     app.setOrganizationName("KDAB");
     app.setApplicationName("flow");
+
+    QLoggingCategory::setFilterRules("flow.plugins.debug=false");
 
     QTranslator translator;
     translator.load(QString(":/translations/flow_%1").arg(QLocale::system().name())); // export LANG="pt_PT" to change
