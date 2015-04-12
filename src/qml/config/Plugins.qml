@@ -9,6 +9,7 @@ Item {
     property string smallText: ""
     property string noPluginsText: ""
     property QtObject pluginModel: null
+    property bool showCheckBox: true
 
     Text {
         id: smallText1
@@ -86,6 +87,7 @@ Item {
                 }
 
                 FlowCheckBox {
+                    visible: root.showCheckBox
                     anchors.verticalCenter: undefined
                     anchors.top: containerItem.top
                     anchors.topMargin: 2 * _controller.dpiFactor

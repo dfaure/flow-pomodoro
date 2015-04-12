@@ -8,4 +8,5 @@ Plugins {
 
     noPluginsText: qsTr("no storage plugins were found")
     pluginModel: _storagePluginModel
+    showCheckBox: false
 }
