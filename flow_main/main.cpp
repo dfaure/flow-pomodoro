@@ -101,6 +101,11 @@ void flowMessageHandler(QtMsgType type, const QMessageLogContext &context, const
     case QtDebugMsg:
         level = "Debug: ";
         break;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+    case QtInfoMsg:
+        level = "Info: ";
+        break;
+#endif
     case QtWarningMsg:
         level = "Warning: ";
         break;
