@@ -23,6 +23,7 @@
 #include "pluginmodel.h"
 #include "distractionsplugin.h"
 #include "storageplugin.h"
+#include "storagebackendinstancemodel.h"
 #include "settings.h"
 #include "circularprogressindicator.h"
 #include "taskfilterproxymodel.h"
@@ -81,6 +82,10 @@ static void registerQmlTypes()
     qmlRegisterUncreatableType<ExtendedTagsModel>("Controller",
                                                   1, 0, "ExtendedTagsModel",
                                                   "ExtendedTagsModel is not creatable");
+
+    qmlRegisterUncreatableType<StorageBackendInstanceModel>("Controller",
+                                                            1, 0, "StorageBackendInstanceModel",
+                                                            "StorageBackendInstanceModel is not creatable");
 
     qmlRegisterUncreatableType<Controller>("Controller",
                                            1, 0, "Controller",

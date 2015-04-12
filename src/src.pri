@@ -19,6 +19,8 @@ SOURCES += $$PWD/checkabletagmodel.cpp \
            $$PWD/sortedtagsmodel.cpp \
            $$PWD/sortedtaskcontextmenumodel.cpp \
            $$PWD/storage.cpp \
+           $$PWD/storagebackendinstance.cpp \
+           $$PWD/storagebackendinstancemodel.cpp \
            $$PWD/storageplugin.cpp \
            $$PWD/syncable.cpp \
            $$PWD/tag.cpp \
@@ -49,6 +51,8 @@ HEADERS += $$PWD/checkabletagmodel.h \
            $$PWD/sortedtagsmodel.h \
            $$PWD/sortedtaskcontextmenumodel.h \
            $$PWD/storage.h \
+           $$PWD/storagebackendinstance.h \
+           $$PWD/storagebackendinstancemodel.h \
            $$PWD/storageplugin.h \
            $$PWD/syncable.h \
            $$PWD/tag.h \

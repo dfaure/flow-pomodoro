@@ -20,6 +20,8 @@ set(flowPrivate_SRC
     sortedtagsmodel.cpp
     sortedtaskcontextmenumodel.cpp
     storage.cpp
+    storagebackendinstance.cpp
+    storagebackendinstancemodel.cpp
     storageplugin.cpp
     syncable.cpp
     tag.cpp

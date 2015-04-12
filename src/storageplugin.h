@@ -21,12 +21,39 @@
 #define STORAGE_PLUGIN_H
 
 #include "pluginbase.h"
+#include <QUrl>
 
-class FLOW_EXPORT StoragePlugin : public PluginBase {
+class StorageBackendInstance;
+class StorageBackendInstanceModel;
+class QSettings;
+
+class FLOW_EXPORT StoragePlugin : public PluginBase
+{
     Q_OBJECT
+    Q_PROPERTY(StorageBackendInstanceModel *instanceModel READ instanceModel CONSTANT)
+    Q_PROPERTY(QUrl instanceConfigComponentUrl READ instanceConfigComponentUrl CONSTANT)
 public:
     StoragePlugin();
 
+    // The list of backend instances associated with this plugin
+    StorageBackendInstanceModel* instanceModel() const;
+    QUrl instanceConfigComponentUrl() const;
+
+    Q_INVOKABLE void createBackendInstance();
+    Q_INVOKABLE void removeBackendInstance(StorageBackendInstance *);
+
+protected:
+    virtual StorageBackendInstance* createBackend_impl() = 0;
+    virtual StorageBackendInstance *fromConfiguration(const QVariant &conf) = 0;
+
+private:
+    void loadBackendInstances();
+    void saveBackendInstances();
+    void connectInstance(StorageBackendInstance *);
+    QQmlComponent *configComponent() const override;
+
+    StorageBackendInstanceModel *const m_instanceModel;
+    QSettings *const m_settings;
 };
 
 #endif

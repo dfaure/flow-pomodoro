@@ -17,26 +17,37 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TEXT_FILE_PLUGIN_H
-#define TEXT_FILE_PLUGIN_H
+#ifndef TEXT_FILE_BACKEND_H
+#define TEXT_FILE_BACKEND_H
 
-#include "storageplugin.h"
+#include "storagebackendinstance.h"
 
-class StorageBackendInstance;
+#include <QUrl>
 
-class TextFilePlugin : public StoragePlugin
+class TextFileBackendInstance : public StorageBackendInstance
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginBase/v1.2")
-    Q_INTERFACES(PluginBase)
+    Q_PROPERTY(QUrl filename READ filename WRITE setFilename NOTIFY filenameChanged)
+    Q_PROPERTY(QString shortname READ shortname NOTIFY filenameChanged)
 public:
-    TextFilePlugin();
+    explicit TextFileBackendInstance(QObject *parent = nullptr);
+    bool isConfigured() const override;
 
-    QString text() const Q_DECL_OVERRIDE;
-    QString helpText() const Q_DECL_OVERRIDE;
-    bool enabledByDefault() const Q_DECL_OVERRIDE;
-    StorageBackendInstance *createBackend_impl() Q_DECL_OVERRIDE;
-    StorageBackendInstance *fromConfiguration(const QVariant &conf) override;
+    QUrl filename() const;
+    QString shortname() const;
+    void setFilename(const QUrl &);
+
+    QAbstractItemModel *taskModel() const override;
+
+Q_SIGNALS:
+    void filenameChanged();
+
+protected:
+    QVariant configuration_impl() const override;
+    void setConfiguration_impl(const QVariant &);
+
+private:
+    QUrl m_filename;
 };
 
 #endif

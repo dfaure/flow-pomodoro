@@ -94,6 +94,11 @@ void PluginBase::setLastError(const QString &lastError)
     }
 }
 
+QString PluginBase::settingsGroup() const
+{
+    return metaObject()->className();
+}
+
 QQmlComponent *PluginBase::configComponent() const
 {
     return 0;

@@ -1,3 +1,5 @@
+include ("../../global.pri")
+
 INCLUDEPATH += ../../../src/
 DESTDIR = ../
 

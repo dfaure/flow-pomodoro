@@ -6,5 +6,10 @@ CONFIG   += plugin
 TARGET = textfile
 TEMPLATE = lib
 
-HEADERS += textfile.h
-SOURCES += textfile.cpp
+HEADERS += textfile.h \
+           textfilebackendinstance.h
+
+SOURCES += textfile.cpp \
+           textfilebackendinstance.cpp
+
+RESOURCES += textfileplugin.qrc

@@ -57,8 +57,7 @@ public:
     QQuickItem* configureItem() const;
     QString lastError() const;
     void setLastError(const QString &);
-
-    virtual QQmlComponent *configComponent() const;
+    QString settingsGroup() const;
 
     virtual QString text() const = 0;
     virtual QString helpText() const = 0;
@@ -67,6 +66,9 @@ public:
 Q_SIGNALS:
     void lastErrorChanged();
     void enabledChanged(bool enabled);
+
+protected:
+    virtual QQmlComponent *configComponent() const;
 
 private:
     class Private;

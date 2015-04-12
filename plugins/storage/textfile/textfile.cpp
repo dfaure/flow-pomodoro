@@ -18,6 +18,7 @@
 */
 
 #include "textfile.h"
+#include "textfilebackendinstance.h"
 
 TextFilePlugin::TextFilePlugin() : StoragePlugin()
 {
@@ -36,4 +37,16 @@ QString TextFilePlugin::helpText() const
 bool TextFilePlugin::enabledByDefault() const
 {
     return false;
+}
+
+StorageBackendInstance* TextFilePlugin::createBackend_impl()
+{
+    return new TextFileBackendInstance(this);
+}
+
+StorageBackendInstance *TextFilePlugin::fromConfiguration(const QVariant &conf)
+{
+    auto backendInstance = new TextFileBackendInstance(this);
+    backendInstance->setConfiguration(conf);
+    return backendInstance;
 }
