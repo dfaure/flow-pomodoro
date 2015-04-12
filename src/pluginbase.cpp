@@ -28,7 +28,7 @@ class PluginBase::Private
 public:
     Private()
         : m_enabled(false)
-        , m_settings(0)
+        , m_settings(nullptr)
         , m_qmlEngine(nullptr)
     {
     }
@@ -101,7 +101,7 @@ QString PluginBase::settingsGroup() const
 
 QQmlComponent *PluginBase::configComponent() const
 {
-    return 0;
+    return nullptr;
 }
 
 void PluginBase::setQmlEngine(QQmlEngine *engine)

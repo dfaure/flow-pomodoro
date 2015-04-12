@@ -25,7 +25,7 @@ class SortedTaskContextMenuModel : public QSortFilterProxyModel
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
 
-    explicit SortedTaskContextMenuModel(QObject *parent = 0);
+    explicit SortedTaskContextMenuModel(QObject *parent = nullptr);
     ~SortedTaskContextMenuModel();
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const Q_DECL_OVERRIDE;
     int count() const;

@@ -133,7 +133,7 @@ Kernel::Kernel(const RuntimeConfiguration &config, QObject *parent)
     : QObject(parent)
     , m_runtimeConfiguration(config)
     , m_storage(new JsonStorage(this, this))
-    , m_qmlEngine(new QQmlEngine(0)) // leak the engine, no point in wasting shutdown time. Also we get a qmldebug server crash if it's parented to qApp, which Kernel is
+    , m_qmlEngine(new QQmlEngine(nullptr)) // leak the engine, no point in wasting shutdown time. Also we get a qmldebug server crash if it's parented to qApp, which Kernel is
     , m_settings(config.settings() ? config.settings() : new Settings(this))
     , m_controller(new Controller(m_qmlEngine->rootContext(), this, m_storage, m_settings, this))
     , m_distractionPluginModel(new PluginModel(this))
@@ -142,8 +142,8 @@ Kernel::Kernel(const RuntimeConfiguration &config, QObject *parent)
     , m_webDavSyncer(new WebDAVSyncer(this))
 #endif
 #if defined(QT_WIDGETS_LIB) && !defined(QT_NO_SYSTRAY)
-    , m_systrayIcon(0)
-    , m_trayMenu(0)
+    , m_systrayIcon(nullptr)
+    , m_trayMenu(nullptr)
 #endif
 {
     QFontDatabase::addApplicationFont(":/fonts/fontawesome-webfont.ttf");
@@ -255,8 +255,8 @@ void Kernel::destroySystray()
 #if defined(QT_WIDGETS_LIB) && !defined(QT_NO_SYSTRAY)
     delete m_systrayIcon;
     delete m_trayMenu;
-    m_systrayIcon = 0;
-    m_trayMenu = 0;
+    m_systrayIcon = nullptr;
+    m_trayMenu = nullptr;
 #endif
 }
 

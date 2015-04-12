@@ -54,7 +54,7 @@ public:
         bool dismiss;
     };
 
-    explicit TaskContextMenuModel(Task *task, QObject *parent = 0);
+    explicit TaskContextMenuModel(Task *task, QObject *parent = nullptr);
     int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
     QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
     QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;

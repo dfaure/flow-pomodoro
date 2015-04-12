@@ -59,13 +59,13 @@ Task::Task(Kernel *kernel, const QString &summary)
     : QObject()
     , Syncable()
     , m_summary(summary.isEmpty() ? tr("New Task") : summary)
-    , m_checkableTagModel(0)
+    , m_checkableTagModel(nullptr)
     , m_status(TaskStopped)
     , m_staged(false)
     , m_creationDate(QDateTime::currentDateTimeUtc())
     , m_modificationDate(m_creationDate)
-    , m_contextMenuModel(0)
-    , m_sortedContextMenuModel(0)
+    , m_contextMenuModel(nullptr)
+    , m_sortedContextMenuModel(nullptr)
     , m_kernel(kernel)
     , m_priority(PriorityNone)
 {
@@ -476,7 +476,7 @@ void Task::setKernel(Kernel *kernel)
 
 Storage *Task::storage() const
 {
-    return m_kernel ? m_kernel->storage() : 0;
+    return m_kernel ? m_kernel->storage() : nullptr;
 }
 
 bool Task::equals(Task *other) const

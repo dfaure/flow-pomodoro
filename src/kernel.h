@@ -45,7 +45,7 @@ class FLOW_EXPORT Kernel : public QObject
 {
     Q_OBJECT
 public:
-    explicit Kernel(const RuntimeConfiguration &, QObject *parent = 0);
+    explicit Kernel(const RuntimeConfiguration &, QObject *parent = nullptr);
     ~Kernel();
     Storage* storage() const;
     Controller *controller() const;

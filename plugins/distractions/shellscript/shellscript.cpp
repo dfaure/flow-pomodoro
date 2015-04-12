@@ -62,7 +62,7 @@ public:
     }
 
 private:
-    void run()
+    void run() override
     {
         QMutexLocker locker(m_mutex);
         QProcess *process = new QProcess();
@@ -146,7 +146,7 @@ QQmlComponent *ShellScriptPlugin::configComponent() const
 {
 #if defined(Q_OS_LINUX)
     if (linuxTextEditor().isEmpty())
-        return 0;
+        return nullptr;
 #endif
 
     return new QQmlComponent(qmlEngine(), QUrl("qrc:/plugins/shellscript/Config.qml"),

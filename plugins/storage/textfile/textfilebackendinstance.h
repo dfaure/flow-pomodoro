@@ -44,7 +44,7 @@ Q_SIGNALS:
 
 protected:
     QVariant configuration_impl() const override;
-    void setConfiguration_impl(const QVariant &);
+    void setConfiguration_impl(const QVariant &) override;
 
 private:
     QUrl m_filename;

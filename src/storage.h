@@ -78,7 +78,7 @@ public:
         QByteArray instanceId;
     };
 
-    explicit Storage(Kernel *kernel, QObject *parent = 0);
+    explicit Storage(Kernel *kernel, QObject *parent = nullptr);
     ~Storage();
 
     const TagList& tags() const;

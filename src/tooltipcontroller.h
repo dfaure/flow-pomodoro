@@ -28,7 +28,7 @@ class ToolTipController : public QObject
 {
     Q_OBJECT
 public:
-    explicit ToolTipController(QObject *parent = 0);
+    explicit ToolTipController(QObject *parent = nullptr);
 
 public Q_SLOTS:
     void showToolTip(QQuickItem *item, const QString &text);

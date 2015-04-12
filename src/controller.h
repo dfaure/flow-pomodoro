@@ -134,7 +134,7 @@ public:
     };
 
     explicit Controller(QQmlContext *context, Kernel *, Storage *storage,
-                        Settings *settings, QObject *parent = 0);
+                        Settings *settings, QObject *parent = nullptr);
     ~Controller();
 
     int remainingMinutes() const;
