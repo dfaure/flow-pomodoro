@@ -19,9 +19,9 @@ public:
 
     explicit StorageBackendInstanceModel(QObject *parent = nullptr);
     ~StorageBackendInstanceModel();
-    int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
-    QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
-    QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
     int count() const;
 
     void appendInstance(StorageBackendInstance *);

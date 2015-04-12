@@ -32,10 +32,10 @@ class TextFilePlugin : public StoragePlugin
 public:
     TextFilePlugin();
 
-    QString text() const Q_DECL_OVERRIDE;
-    QString helpText() const Q_DECL_OVERRIDE;
-    bool enabledByDefault() const Q_DECL_OVERRIDE;
-    StorageBackendInstance *createBackend_impl() Q_DECL_OVERRIDE;
+    QString text() const override;
+    QString helpText() const override;
+    bool enabledByDefault() const override;
+    StorageBackendInstance *createBackend_impl() override;
     StorageBackendInstance *fromConfiguration(const QVariant &conf) override;
 };
 

@@ -149,8 +149,8 @@ public:
     Task::Ptr toStrongRef() const;
     void setWeakPointer(const QWeakPointer<Task> &);
 
-    QVariantMap toJson() const Q_DECL_OVERRIDE;
-    void fromJson(const QVariantMap &) Q_DECL_OVERRIDE;
+    QVariantMap toJson() const override;
+    void fromJson(const QVariantMap &) override;
 
     TaskContextMenuModel *contextMenuModel() const;
     SortedTaskContextMenuModel *sortedContextMenuModel() const;

@@ -35,15 +35,15 @@ class KMailPlugin : public DistractionsPlugin
 public:
     KMailPlugin();
 
-    void setTaskStatus(TaskStatus status) Q_DECL_OVERRIDE;
-    QString text() const Q_DECL_OVERRIDE;
-    QString helpText() const Q_DECL_OVERRIDE;
-    bool enabledByDefault() const Q_DECL_OVERRIDE;
+    void setTaskStatus(TaskStatus status) override;
+    QString text() const override;
+    QString helpText() const override;
+    bool enabledByDefault() const override;
 
 private:
     void setSystrayIconsNotificationsEnabled(bool enabled);
     void setNewMailAgentEnabled(bool enabled);
-    void update(bool enable) Q_DECL_OVERRIDE;
+    void update(bool enable) override;
 };
 
 #endif

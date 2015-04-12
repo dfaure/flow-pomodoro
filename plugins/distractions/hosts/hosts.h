@@ -33,12 +33,12 @@ class HostsPlugin : public DistractionsPlugin
 public:
     HostsPlugin();
 
-    void setTaskStatus(TaskStatus status) Q_DECL_OVERRIDE;
-    QString text() const Q_DECL_OVERRIDE;
-    QString helpText() const Q_DECL_OVERRIDE;
-    QQmlComponent* configComponent() const Q_DECL_OVERRIDE;
-    void setSettings(QSettings *) Q_DECL_OVERRIDE;
-    bool enabledByDefault() const Q_DECL_OVERRIDE;
+    void setTaskStatus(TaskStatus status) override;
+    QString text() const override;
+    QString helpText() const override;
+    QQmlComponent* configComponent() const override;
+    void setSettings(QSettings *) override;
+    bool enabledByDefault() const override;
 
     void setHosts(const QString &);
     QString hosts() const;
@@ -49,7 +49,7 @@ Q_SIGNALS:
 private:
     bool checkSanity();
     void updateHosts(bool allow);
-    void update(bool blockDistractions) Q_DECL_OVERRIDE;
+    void update(bool blockDistractions) override;
     void startProcess(const QString &filename, const QStringList &arguments);
     QString m_hosts;
 };
