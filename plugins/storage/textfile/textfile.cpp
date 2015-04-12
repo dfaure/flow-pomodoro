@@ -46,7 +46,7 @@ StorageBackendInstance* TextFilePlugin::createBackend_impl()
 
 StorageBackendInstance *TextFilePlugin::fromConfiguration(const QVariant &conf)
 {
-    auto backendInstance = new TextFileBackendInstance(this);
+    auto  backendInstance = new TextFileBackendInstance(this);
     backendInstance->setConfiguration(conf);
     return backendInstance;
 }

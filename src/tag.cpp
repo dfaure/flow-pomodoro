@@ -121,7 +121,7 @@ void Tag::setBeingEdited(bool yes)
 QAbstractItemModel *Tag::taskModel()
 {
     if (!m_taskModel && !m_isFake) {
-        TaskFilterProxyModel *model = new TaskFilterProxyModel(this);
+        auto model = new TaskFilterProxyModel(this);
         model->setTagName(m_name);
         model->setSourceModel(m_kernel->storage()->archivedTasksModel());
         model->setObjectName(QString("Tasks with tag %1 model").arg(m_name));

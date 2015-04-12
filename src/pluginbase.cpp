@@ -123,7 +123,7 @@ void PluginBase::setQmlEngine(QQmlEngine *engine)
         return;
     }
 
-    QQmlContext *subContext = new QQmlContext(engine->rootContext());
+    auto subContext = new QQmlContext(engine->rootContext());
     d->m_configItem = qobject_cast<QQuickItem*>(component->create(subContext));
     subContext->setContextProperty("_plugin", this);
 
