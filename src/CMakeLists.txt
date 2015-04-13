@@ -1,5 +1,6 @@
 
 set(flowPrivate_SRC
+    assertingproxymodel.cpp
     checkabletagmodel.cpp
     circularprogressindicator.cpp
     checkbox.cpp

@@ -60,7 +60,7 @@ public:
     void setKernel(Kernel *kernel);
     bool isFake() const;
 
-#if defined(QT_TESTLIB_LIB)
+#if defined(BUILT_FOR_TESTING)
     static int tagCount;
 #endif
 

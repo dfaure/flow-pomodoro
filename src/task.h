@@ -162,7 +162,7 @@ public:
 
     bool equals(Task *) const;
 
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
     static int taskCount;
 #endif
 

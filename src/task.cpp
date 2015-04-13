@@ -25,7 +25,7 @@
 #include "checkabletagmodel.h"
 #include "taskcontextmenumodel.h"
 #include "sortedtaskcontextmenumodel.h"
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
 # include "assertingproxymodel.h"
 #endif
 #include "storage.h"
@@ -34,7 +34,7 @@
 #include <QQmlEngine>
 #include <QUuid>
 
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
     int Task::taskCount;
 #endif
 
@@ -81,7 +81,7 @@ Task::Task(Kernel *kernel, const QString &summary)
 
     connect(kernel, &Kernel::dayChanged, this, &Task::onDayChanged);
 
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
     taskCount++;
 #endif
 
@@ -115,7 +115,7 @@ void Task::modelSetup()
     m_sortedContextMenuModel = new SortedTaskContextMenuModel(this);
     m_sortedContextMenuModel->setSourceModel(m_contextMenuModel);
 
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
     AssertingProxyModel *assert = new AssertingProxyModel(this);
     assert->setSourceModel(m_contextMenuModel);
     assert = new AssertingProxyModel(this);
@@ -129,7 +129,7 @@ void Task::modelSetup()
 
 Task::~Task()
 {
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
     taskCount--;
 #endif
 }

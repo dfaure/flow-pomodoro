@@ -29,7 +29,7 @@
 #include "runtimeconfiguration.h"
 #include "nonemptytagfilterproxy.h"
 
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
 # include "assertingproxymodel.h"
   int Storage::storageCount = 0;
   int Storage::saveCallCount = 0;
@@ -137,7 +137,7 @@ Storage::Storage(Kernel *kernel, QObject *parent)
     m_dueDateTasksModel->setObjectName("Archived tasks with due date");
     m_dueDateTasksModel->sort(0, Qt::AscendingOrder);
 
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
     AssertingProxyModel *assert = new AssertingProxyModel(this);
     assert->setSourceModel(tasksModel);
     assert = new AssertingProxyModel(this);
@@ -164,7 +164,7 @@ Storage::Storage(Kernel *kernel, QObject *parent)
 
 Storage::~Storage()
 {
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
     storageCount--;
     qDebug() << "Deleted storage" << this << "; count is now" << storageCount;
 #endif
@@ -233,7 +233,7 @@ void Storage::load()
 
 void Storage::save()
 {
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
     Storage::saveCallCount++;
 #endif
 

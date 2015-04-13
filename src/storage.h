@@ -146,7 +146,7 @@ public:
 
     Q_INVOKABLE QString dataFile() const;
 
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
     static int storageCount;
     static int saveCallCount;
 #endif

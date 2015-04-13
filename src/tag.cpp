@@ -20,7 +20,7 @@
 #include "tag.h"
 #include "taskfilterproxymodel.h"
 #include "taskfilterproxymodel.h"
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
 # include "assertingproxymodel.h"
 #endif
 #include "storage.h"
@@ -28,7 +28,7 @@
 
 #include <QQmlEngine>
 
-#if defined(QT_TESTLIB_LIB)
+#if defined(BUILT_FOR_TESTING)
     int Tag::tagCount = 0;
 #endif
 
@@ -44,7 +44,7 @@ Tag::Tag(Kernel *kernel, const QString &name)
     , m_dontUpdateRevision(false)
 {
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
-#if defined(QT_TESTLIB_LIB)
+#if defined(BUILT_FOR_TESTING)
     tagCount++;
     // qDebug() << "[TAG] CTOR " << ((void*)this) << m_name;
 #endif
@@ -65,7 +65,7 @@ Tag::Tag(const QString &name, QAbstractItemModel *taskModel)
 
 Tag::~Tag()
 {
-#if defined(QT_TESTLIB_LIB)
+#if defined(BUILT_FOR_TESTING)
     if (m_kernel)
         tagCount--;
     // qDebug() << "[TAG] DTOR " << ((void*)this) << m_name;
@@ -130,7 +130,7 @@ QAbstractItemModel *Tag::taskModel()
         connect(this, &Tag::taskCountChanged,
                 model, &TaskFilterProxyModel::invalidateFilter,
                 Qt::QueuedConnection);
-#if defined(UNIT_TEST_RUN)
+#if defined(BUILT_FOR_TESTING)
         AssertingProxyModel *assert = new AssertingProxyModel(this);
         assert->setSourceModel(m_taskModel);
 #endif

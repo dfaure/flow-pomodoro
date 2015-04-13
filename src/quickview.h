@@ -44,7 +44,7 @@ public:
     void setContractedHeight(int);
     int contractedHeight() const;
 
-#ifdef UNIT_TEST_RUN
+#ifdef BUILT_FOR_TESTING
     QQuickItem *itemByName(const QString &name, QQuickItem *root = 0);
     QList<QQuickItem*> itemsByName(const QString &name, QQuickItem *root = 0);
     void moveMouseTo(QQuickItem *item);

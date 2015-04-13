@@ -357,7 +357,7 @@ void QuickView::showWidgetContextMenu(const QPoint &pos)
 }
 
 
-#ifdef UNIT_TEST_RUN
+#ifdef BUILT_FOR_TESTING
 
 // Since QObject::findChildren() doesn't know about parentItem()/childItems()
 static void findItems(QQuickItem *root, const QString &name, QList<QQuickItem*> &list)

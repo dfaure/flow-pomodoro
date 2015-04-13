@@ -163,7 +163,7 @@ private:
         Storage *storage = kernel->storage();
         GenericListModel<T> finalList;
 
-#ifdef UNIT_TEST_RUN
+#ifdef BUILT_FOR_TESTING
         qDebug();
         foreach (const T &t, localList) {
             qDebug() << "Local: " << t;

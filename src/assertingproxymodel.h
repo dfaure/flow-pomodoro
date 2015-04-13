@@ -20,9 +20,11 @@
 #ifndef ASSERTINGPROXYMODEL_H
 #define ASSERTINGPROXYMODEL_H
 
+#include "flow_export.h"
+
 #include <QIdentityProxyModel>
 
-class AssertingProxyModel : public QIdentityProxyModel
+class FLOW_EXPORT AssertingProxyModel : public QIdentityProxyModel
 {
     Q_OBJECT
 public:

@@ -27,9 +27,18 @@ else()
 endif()
 
 
+if (BUILD_TESTS)
+    add_definitions(-DBUILT_FOR_TESTING)
+    include_directories("${PROJECT_SOURCE_DIR}/tests/")
+endif()
+
 add_subdirectory(src)
 add_subdirectory(plugins)
 add_subdirectory(flow_main)
+if (BUILD_TESTS)
+    add_definitions(-DBUILT_FOR_TESTING)
+    add_subdirectory(tests)
+endif()
 
 set(CPACK_PACKAGE_VERSION "1.1.0")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")

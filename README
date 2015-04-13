@@ -14,11 +14,10 @@ DEPENDENCIES
 
   Qt >= 5.4.0 (QtDeclarative and QtQuickControls)
 --------------------------------------------------------------------------------
-BUILD
+BUILD && INSTALL
 
-    qmake && make
---------------------------------------------------------------------------------
-INSTALL
+    cmake . && make && make install
 
-    make INSTALL_ROOT=/usr/local/ install
+    To choose install dir: -DCMAKE_INSTALL_PREFIX=/my/prefix/
+    To build tests       : -DBUILD_TESTS=ON
 --------------------------------------------------------------------------------
