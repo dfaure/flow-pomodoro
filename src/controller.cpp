@@ -354,7 +354,7 @@ void Controller::setExpanded(bool expanded)
         if (expanded) {
             emit requestActivateWindow();
         } else {
-            editTask(Q_NULLPTR, EditModeNone);
+            editTask(nullptr, EditModeNone);
         }
         setSelectedTask(Task::Ptr());
         emit expandedChanged();
@@ -889,7 +889,7 @@ QAbstractItemModel *Controller::currentTabTaskModel() const
     if (m_queueType == QueueTypeToday)
         return m_storage->stagedTasksModel();
 
-    return m_currentTag ? m_currentTag->taskModel() : Q_NULLPTR;
+    return m_currentTag ? m_currentTag->taskModel() : nullptr;
 }
 
 void Controller::setTagEditStatus(TagEditStatus status)
@@ -925,7 +925,7 @@ bool Controller::eventFilter(QObject *object, QEvent *event)
             setCurrentPage(MainPage);
         }
         setSelectedTask(Task::Ptr());
-        editTask(Q_NULLPTR, EditModeNone);
+        editTask(nullptr, EditModeNone);
         return true;
     }
 
@@ -934,7 +934,7 @@ bool Controller::eventFilter(QObject *object, QEvent *event)
 
     if (escKeyPressed) {
         if (editing) {
-            editTask(Q_NULLPTR, EditModeNone);
+            editTask(nullptr, EditModeNone);
         } else if (newTagDialogVisible()) {
             setNewTagDialogVisible(false);
         } else if (m_rightClickedTask) {
@@ -967,7 +967,7 @@ bool Controller::eventFilter(QObject *object, QEvent *event)
         if (taskMenuVisible()) {
             // Too many situations where we can loose focus, so lets not use QML keyboard handling
             if (m_currentMenuIndex == -1) {
-                setRightClickedTask(Q_NULLPTR);
+                setRightClickedTask(nullptr);
             } else {
                 emit enterPressed();
             }
@@ -1009,7 +1009,7 @@ bool Controller::eventFilter(QObject *object, QEvent *event)
            return true;
            break;
        case Qt::Key_Delete:
-           if (m_selectedTask == Q_NULLPTR) {
+           if (m_selectedTask == nullptr) {
                stopPomodoro();
            } else {
                removeTask(m_selectedTask);
@@ -1214,7 +1214,7 @@ void Controller::endAddingNewTag(const QString &tagName)
 
 void Controller::requestContextMenu(Task *task, bool tagOnlyMenu)
 {
-    editTask(Q_NULLPTR, EditModeNone);
+    editTask(nullptr, EditModeNone);
     setRightClickedTask(task, tagOnlyMenu);
 }
 
@@ -1247,7 +1247,7 @@ void Controller::addTask(const QString &text, bool startEditMode)
     }
 
     task->setStaged(m_queueType == QueueTypeToday);
-    editTask(Q_NULLPTR, EditModeNone);
+    editTask(nullptr, EditModeNone);
 
     if (startEditMode) {
         setExpanded(true);
@@ -1261,7 +1261,7 @@ void Controller::addTask(const QString &text, bool startEditMode)
 void Controller::removeTask(Task *task)
 {
     qDebug() << "Removing task" << task->summary();
-    editTask(Q_NULLPTR, EditModeNone);
+    editTask(nullptr, EditModeNone);
     m_storage->removeTask(task->toStrongRef());
 }
 

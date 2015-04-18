@@ -96,8 +96,8 @@ void Task::modelSetup()
     m_checkableTagModel = new CheckableTagModel(this);
 
     m_tags.setDataFunction(&dataFunction);
-    m_tags.insertRole("tag", Q_NULLPTR, TagRole);
-    m_tags.insertRole("task", Q_NULLPTR, TaskRole);
+    m_tags.insertRole("tag", nullptr, TagRole);
+    m_tags.insertRole("task", nullptr, TaskRole);
 
     QAbstractItemModel *tagsModel = m_tags; // android doesn't build if you use m_tags directly in the connect statement
     connect(tagsModel, &QAbstractListModel::modelReset, this, &Task::tagsChanged);

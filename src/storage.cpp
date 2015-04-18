@@ -97,8 +97,8 @@ Storage::Storage(Kernel *kernel, QObject *parent)
     connect(&m_scheduleTimer, &QTimer::timeout, this, &Storage::save);
 
     m_data.tags.setDataFunction(&tagsDataFunction);
-    m_data.tags.insertRole("tag", Q_NULLPTR, TagRole);
-    m_data.tags.insertRole("tagPtr", Q_NULLPTR, TagPtrRole);
+    m_data.tags.insertRole("tag", nullptr, TagRole);
+    m_data.tags.insertRole("tagPtr", nullptr, TagPtrRole);
     QAbstractItemModel *tagsModel = m_data.tags; // android doesn't build if you use m_data.tags directly in the connect statement
     connect(tagsModel, &QAbstractListModel::dataChanged, this, &Storage::scheduleSave);
     connect(tagsModel, &QAbstractListModel::rowsInserted, this, &Storage::scheduleSave);
@@ -123,9 +123,9 @@ Storage::Storage(Kernel *kernel, QObject *parent)
     connect(tasksModel, &QAbstractListModel::modelReset, this, &Storage::scheduleSave);
 
     m_data.tasks.setDataFunction(&tasksDataFunction);
-    m_data.tasks.insertRole("task", Q_NULLPTR, TaskRole);
-    m_data.tasks.insertRole("taskPtr", Q_NULLPTR, TaskPtrRole);
-    m_data.tasks.insertRole("dueDateSection", Q_NULLPTR, DueDateSectionRole);
+    m_data.tasks.insertRole("task", nullptr, TaskRole);
+    m_data.tasks.insertRole("taskPtr", nullptr, TaskPtrRole);
+    m_data.tasks.insertRole("dueDateSection", nullptr, DueDateSectionRole);
     m_stagedTasksModel->setSourceModel(m_data.tasks);
     m_stagedTasksModel->setFilterStaged(true);
 
