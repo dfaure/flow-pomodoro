@@ -33,7 +33,7 @@ class FLOW_EXPORT StoragePlugin : public PluginBase
     Q_PROPERTY(StorageBackendInstanceModel *instanceModel READ instanceModel CONSTANT)
     Q_PROPERTY(QUrl instanceConfigComponentUrl READ instanceConfigComponentUrl CONSTANT)
 public:
-    StoragePlugin();
+    explicit StoragePlugin(QObject *parent = nullptr);
 
     // The list of backend instances associated with this plugin
     StorageBackendInstanceModel* instanceModel() const;
@@ -43,6 +43,10 @@ public:
     Q_INVOKABLE void removeBackendInstance(StorageBackendInstance *);
 
 protected:
+    // If true, the plugin only supports one instance
+    virtual bool isSingleInstanced() const;
+
+    virtual QVariant configuration() const;
     virtual StorageBackendInstance* createBackend_impl() = 0;
     virtual StorageBackendInstance *fromConfiguration(const QVariant &conf) = 0;
 

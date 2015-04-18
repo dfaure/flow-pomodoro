@@ -29,6 +29,7 @@ public:
     Private()
         : m_enabled(false)
         , m_settings(nullptr)
+        , m_configItem(nullptr)
         , m_qmlEngine(nullptr)
     {
     }
@@ -41,7 +42,9 @@ public:
 };
 
 
-PluginBase::PluginBase() : d(new Private())
+PluginBase::PluginBase(QObject *parent)
+    : QObject(parent)
+    , d(new Private())
 {
 }
 

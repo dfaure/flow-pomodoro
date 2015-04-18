@@ -43,7 +43,7 @@ class FLOW_EXPORT PluginBase : public QObject
     Q_PROPERTY(QString lastError READ lastError NOTIFY lastErrorChanged)
 public:
     typedef QList<PluginBase*> List;
-    PluginBase();
+    explicit PluginBase(QObject *parent = nullptr);
     virtual ~PluginBase();
 
     bool enabled() const;

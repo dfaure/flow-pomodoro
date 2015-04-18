@@ -8,6 +8,8 @@ set(flowPrivate_SRC
     distractionsplugin.cpp
     duedate.cpp
     extendedtagsmodel.cpp
+    flowjsonbackendinstance.cpp
+    flowjsonplugin.cpp
     genericlistmodel.h
     jsonstorage.cpp
     kernel.cpp

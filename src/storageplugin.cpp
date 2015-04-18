@@ -27,8 +27,8 @@
 
 Q_LOGGING_CATEGORY(LOG_PLUGIN_STORAGE, "flow.plugins.storage")
 
-StoragePlugin::StoragePlugin()
-    : PluginBase()
+StoragePlugin::StoragePlugin(QObject *parent)
+    : PluginBase(parent)
     , m_instanceModel(new StorageBackendInstanceModel(this))
     , m_settings(new QSettings("KDAB", "flow-pomodoro", this))
 {
@@ -66,6 +66,16 @@ void StoragePlugin::removeBackendInstance(StorageBackendInstance *instance)
     saveBackendInstances();
 }
 
+bool StoragePlugin::isSingleInstanced() const
+{
+    return false;
+}
+
+QVariant StoragePlugin::configuration() const
+{
+    return QVariant();
+}
+
 QQmlComponent *StoragePlugin::configComponent() const
 {
     return new QQmlComponent(qmlEngine(), QUrl("qrc:/qml/StoragePluginConfig.qml"),
@@ -75,30 +85,43 @@ QQmlComponent *StoragePlugin::configComponent() const
 void StoragePlugin::loadBackendInstances()
 {
     m_instanceModel->clear();
-    m_settings->beginGroup(settingsGroup());
-    QVariantList backendsConfs = m_settings->value("instances").toList();
-    qCDebug(LOG_PLUGIN_STORAGE) << "Loaded" << backendsConfs.count() << "instances from settings";
-    m_settings->endGroup();
 
-    foreach (const QVariant &conf, backendsConfs) {
-        StorageBackendInstance *backend = fromConfiguration(conf);
+    if (isSingleInstanced()) {
+        StorageBackendInstance *backend = fromConfiguration(QVariant());
         connectInstance(backend);
         m_instanceModel->appendInstance(backend);
+        qCDebug(LOG_PLUGIN_STORAGE) << "Loaded 1 storage instance for" << settingsGroup();
+    } else {
+        m_settings->beginGroup(settingsGroup());
+        QVariantList perInstanceConfiguration = m_settings->value("instances").toList();
+        qCDebug(LOG_PLUGIN_STORAGE) << "Loaded" << perInstanceConfiguration.count() << "storage instances for" << settingsGroup();
+        m_settings->endGroup();
+
+        foreach (const QVariant &conf, perInstanceConfiguration) {
+            StorageBackendInstance *backend = fromConfiguration(conf);
+            connectInstance(backend);
+            m_instanceModel->appendInstance(backend);
+        }
     }
 }
 
 void StoragePlugin::saveBackendInstances()
 {
     StorageBackendInstance::List instances = m_instanceModel->instances();
-    QVariantList backendsConfs;
+    QVariantList perInstanceConfiguration;
     foreach (StorageBackendInstance *instance, instances) {
         Q_ASSERT(instance != nullptr);
-        backendsConfs << instance->configuration();
+        perInstanceConfiguration << instance->configuration();
     }
 
     m_settings->beginGroup(settingsGroup());
-    m_settings->setValue("instances", backendsConfs);
-    qCDebug(LOG_PLUGIN_STORAGE) << "Saving" << backendsConfs.count() << "instances to settings. group=" << settingsGroup();
+    m_settings->setValue("instances", perInstanceConfiguration);
+
+    QVariant pluginConfiguration = configuration();
+    if (pluginConfiguration.isValid())
+        m_settings->setValue("pluginConfig", pluginConfiguration);
+
+    qCDebug(LOG_PLUGIN_STORAGE) << "Saving" << perInstanceConfiguration.count() << "instances to settings. group=" << settingsGroup();
     m_settings->endGroup();
     m_settings->sync();
 }

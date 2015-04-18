@@ -7,6 +7,8 @@ SOURCES += $$PWD/checkabletagmodel.cpp \
            $$PWD/distractionsplugin.cpp \
            $$PWD/duedate.cpp \
            $$PWD/extendedtagsmodel.cpp \
+           $$PWD/flowjsonbackendinstance.cpp \
+           $$PWD/flowjsonplugin.cpp \
            $$PWD/jsonstorage.cpp \
            $$PWD/kernel.cpp \
            $$PWD/loadmanager.cpp \
@@ -38,6 +40,8 @@ HEADERS += $$PWD/checkabletagmodel.h \
            $$PWD/distractionsplugin.h \
            $$PWD/duedate.h \
            $$PWD/extendedtagsmodel.h \
+           $$PWD/flowjsonbackendinstance.h \
+           $$PWD/flowjsonplugin.h \
            $$PWD/jsonstorage.h      \
            $$PWD/kernel.h \
            $$PWD/loadmanager.h \
