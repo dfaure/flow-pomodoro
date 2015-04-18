@@ -82,14 +82,14 @@ private:
     void notifyDistractionPlugins(TaskStatus newStatus);
 
     RuntimeConfiguration m_runtimeConfiguration;
-    Storage *m_storage;
-    QQmlEngine *m_qmlEngine;
-    Settings *m_settings;
-    Controller *m_controller;
-    PluginModel *m_distractionPluginModel;
-    PluginModel *m_storagePluginModel;
+    Storage *const m_storage;
+    QQmlEngine *const m_qmlEngine;
+    Settings *const m_settings;
+    Controller *const m_controller;
+    PluginModel *const m_distractionPluginModel;
+    PluginModel *const m_storagePluginModel;
 #ifndef NO_WEBDAV
-    WebDAVSyncer *m_webDavSyncer;
+    WebDAVSyncer *const m_webDavSyncer;
 #endif
 #if defined(QT_WIDGETS_LIB) && !defined(QT_NO_SYSTRAY)
     QSystemTrayIcon *m_systrayIcon;
