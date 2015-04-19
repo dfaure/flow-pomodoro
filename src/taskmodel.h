@@ -1,7 +1,7 @@
 /*
   This file is part of Flow.
 
-  Copyright (C) 2014 Sérgio Martins <iamsergio@gmail.com>
+  Copyright (C) 2015 Sérgio Martins <iamsergio@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,39 +17,41 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CHECKABLETAGMODEL_H
-#define CHECKABLETAGMODEL_H
+#ifndef TASK_MODEL_H
+#define TASK_MODEL_H
 
+#include "task.h"
 #include "tagmodel.h"
 
-#include <QIdentityProxyModel>
+#include <QAbstractListModel>
+#include <QList>
 
-class Task;
-
-class CheckableTagModel : public QIdentityProxyModel
+class TaskModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-public:
-    enum {
-        ItemTextRole = TagModel::LastRole + 1,
-        CheckableRole
+public:    
+    enum Role {
+        TaskRole = TagModel::LastRole + 1,
+        TaskPtrRole,
+        DueDateSectionRole
     };
 
-    explicit CheckableTagModel(Task *parent);
-    QVariant data(const QModelIndex &proxyIndex, int role) const override;
+    explicit TaskModel(QObject *parent = nullptr);
+    ~TaskModel();
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-
     int count() const;
+    Task::List tasks() const;
+    void remove(const Task::Ptr &task);
 
 Q_SIGNALS:
     void countChanged();
-
-private Q_SLOTS:
-    void emitDataChanged(const QString &tagName);
+    void modelChanged();
 
 private:
-    Task *m_parentTask;
+    Task::List m_tasks;
 };
 
 #endif

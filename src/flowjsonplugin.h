@@ -21,8 +21,12 @@
 #define FLOW_JSON_PLUGIN_H
 
 #include "storageplugin.h"
+#include "task.h"
+#include "tag.h"
 
+class Kernel;
 class StorageBackendInstance;
+class FlowJsonBackendInstance;
 
 // Implementation of flow's native JSON storage format
 
@@ -32,7 +36,20 @@ class FlowJsonPlugin : public StoragePlugin
     Q_PLUGIN_METADATA(IID "com.kdab.flow.PluginBase/v1.2")
     Q_INTERFACES(PluginBase)
 public:
-    FlowJsonPlugin(QObject *parent = nullptr);
+    enum {
+        JsonSerializerVersion1 = 1
+    };
+
+    struct Data {
+        Data() : serializerVersion(JsonSerializerVersion1) {}
+        Task::List tasks;
+        Tag::List tags;
+        QStringList deletedItemUids; // so we can sync to server
+        int serializerVersion;
+        QByteArray instanceId;
+    };
+
+    explicit FlowJsonPlugin(QObject *parent = nullptr);
 
     QString text() const override;
     QString helpText() const override;
@@ -40,8 +57,11 @@ public:
     StorageBackendInstance *createBackend_impl() override;
     StorageBackendInstance *fromConfiguration(const QVariant &conf) override;
 
+    static FlowJsonBackendInstance *backendInstance(Kernel * = nullptr);
+
 protected:
     bool isSingleInstanced() const override;
+    static FlowJsonBackendInstance *s_backendInstance;
 };
 
 #endif

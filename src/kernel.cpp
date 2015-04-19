@@ -19,7 +19,6 @@
 
 #include "kernel.h"
 #include "controller.h"
-#include "jsonstorage.h"
 #include "pluginmodel.h"
 #include "distractionsplugin.h"
 #include "storageplugin.h"
@@ -30,6 +29,7 @@
 #include "task.h"
 #include "tag.h"
 #include "settings.h"
+#include "storage.h"
 #include "utils.h"
 #include "logging.h"
 #include "checkbox.h"
@@ -49,6 +49,7 @@
 #include <QPluginLoader>
 #include <QDir>
 #include <QWindow>
+#include <QGuiApplication>
 #include <QFontDatabase>
 
 #ifdef QT_WIDGETS_LIB
@@ -133,7 +134,7 @@ Kernel::~Kernel()
 Kernel::Kernel(const RuntimeConfiguration &config, QObject *parent)
     : QObject(parent)
     , m_runtimeConfiguration(config)
-    , m_storage(new JsonStorage(this, this))
+    , m_storage(new Storage(this, this))
     , m_qmlEngine(new QQmlEngine(nullptr)) // leak the engine, no point in wasting shutdown time. Also we get a qmldebug server crash if it's parented to qApp, which Kernel is
     , m_settings(config.settings() ? config.settings() : new Settings(this))
     , m_controller(new Controller(m_qmlEngine->rootContext(), this, m_storage, m_settings, this))
@@ -146,10 +147,13 @@ Kernel::Kernel(const RuntimeConfiguration &config, QObject *parent)
     , m_systrayIcon(nullptr)
     , m_trayMenu(nullptr)
 #endif
+    , m_flowJsonPlugin(new FlowJsonPlugin(this))
 {
     QFontDatabase::addApplicationFont(":/fonts/fontawesome-webfont.ttf");
     QFontDatabase::addApplicationFont(":/fonts/open-sans/OpenSans-Regular.ttf");
     qApp->setFont(QFont("Open Sans"));
+
+    qRegisterMetaType<Tag::Ptr>("Tag::Ptr");
 
     m_qmlEngine->rootContext()->setObjectName("QQmlContext"); // GammaRay convenience
     registerQmlTypes();
@@ -336,7 +340,7 @@ void Kernel::loadPlugins()
 #endif
 
     // The flow JSON plugin is resident, we don't load it:
-    m_storagePluginModel->addPlugin(new FlowJsonPlugin(this));
+    m_storagePluginModel->addPlugin(m_flowJsonPlugin);
 
     foreach (QObject *pluginObject, plugins) {
         auto *plugin = qobject_cast<PluginBase*>(pluginObject);

@@ -1,7 +1,7 @@
 /*
   This file is part of Flow.
 
-  Copyright (C) 2014 Sérgio Martins <iamsergio@gmail.com>
+  Copyright (C) 2014-2015 Sérgio Martins <iamsergio@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,15 +19,16 @@
 
 #include "storage.h"
 #include "tag.h"
+#include "tagmodel.h"
 #include "task.h"
 #include "kernel.h"
 #include "extendedtagsmodel.h"
-#include "jsonstorage.h"
 #include "sortedtagsmodel.h"
 #include "taskfilterproxymodel.h"
 #include "webdavsyncer.h"
 #include "runtimeconfiguration.h"
 #include "nonemptytagfilterproxy.h"
+#include "flowjsonbackendinstance.h"
 
 #if defined(BUILT_FOR_TESTING)
 # include "assertingproxymodel.h"
@@ -35,53 +36,9 @@
   int Storage::saveCallCount = 0;
 #endif
 
-static QVariant tagsDataFunction(const TagList &list, int index, int role)
-{
-    switch (role) {
-    case Storage::TagRole:
-        return QVariant::fromValue<Tag*>(list.at(index).data());
-    case Storage::TagPtrRole:
-        return QVariant::fromValue<Tag::Ptr>(list.at(index));
-    default:
-        return QVariant();
-    }
-}
-
-static QVariant tasksDataFunction(const TaskList &list, int index, int role)
-{
-    Task::Ptr task = list.at(index);
-
-    switch (static_cast<Storage::TaskModelRole>(role)) {
-    case Storage::TaskRole:
-        return QVariant::fromValue<Task*>(task.data());
-    case Storage::TaskPtrRole:
-        return QVariant::fromValue<Task::Ptr>(task);
-    case Storage::DueDateSectionRole:
-        if (task && task->dueDate().isValid()) {
-            const QDate today = QDate::currentDate();
-            const QDate date = task->dueDate();
-            if (today.year() == date.year()) {
-                if (date.weekNumber() == today.weekNumber()) {
-                    return QObject::tr("This week");
-                } else if (date.month() == today.month()) {
-                    return QObject::tr("This month");
-                } else {
-                    return QDate::longMonthName(date.month());
-                }
-            } else {
-                return date.year();
-            }
-        }
-        break;
-    }
-
-    return QVariant();
-}
-
 Storage::Storage(Kernel *kernel, QObject *parent)
     : QObject(parent)
     , m_kernel(kernel)
-    , m_savingDisabled(0)
     , m_taskFilterModel(new TaskFilterProxyModel(this))
     , m_untaggedTasksModel(new TaskFilterProxyModel(this))
     , m_dueDateTasksModel(new TaskFilterProxyModel(this))
@@ -89,47 +46,23 @@ Storage::Storage(Kernel *kernel, QObject *parent)
     , m_archivedTasksModel(new TaskFilterProxyModel(this))
     , m_nonEmptyTagsModel(new NonEmptyTagFilterProxy(this))
     , m_extendedTagsModel(new ExtendedTagsModel(this))
-    , m_savingInProgress(false)
-    , m_loadingInProgress(false)
+    , m_backendInstance(FlowJsonPlugin::backendInstance(kernel))
 {
-    m_scheduleTimer.setSingleShot(true);
-    m_scheduleTimer.setInterval(0);
-    connect(&m_scheduleTimer, &QTimer::timeout, this, &Storage::save);
-
-    m_data.tags.setDataFunction(&tagsDataFunction);
-    m_data.tags.insertRole("tag", nullptr, TagRole);
-    m_data.tags.insertRole("tagPtr", nullptr, TagPtrRole);
-    QAbstractItemModel *tagsModel = m_data.tags; // android doesn't build if you use m_data.tags directly in the connect statement
-    connect(tagsModel, &QAbstractListModel::dataChanged, this, &Storage::scheduleSave);
-    connect(tagsModel, &QAbstractListModel::rowsInserted, this, &Storage::scheduleSave);
-    connect(tagsModel, &QAbstractListModel::rowsRemoved, this, &Storage::scheduleSave);
-    connect(tagsModel, &QAbstractListModel::modelReset, this, &Storage::scheduleSave);
-    qRegisterMetaType<Tag::Ptr>("Tag::Ptr");
-    m_sortedTagModel = new SortedTagsModel(m_data.tags, this);
+    m_sortedTagModel = new SortedTagsModel(m_backendInstance->tagModel(), this);
     m_extendedTagsModel->setSourceModel(m_sortedTagModel);
     m_nonEmptyTagsModel->setSourceModel(m_extendedTagsModel);
 
     connect(this, &Storage::tagAboutToBeRemoved,
             this, &Storage::onTagAboutToBeRemoved);
 
-    m_taskFilterModel->setSourceModel(m_data.tasks);
+    m_taskFilterModel->setSourceModel(m_backendInstance->taskModel());
     m_untaggedTasksModel->setSourceModel(m_archivedTasksModel);
     m_dueDateTasksModel->setSourceModel(m_archivedTasksModel);
 
-    QAbstractItemModel *tasksModel = m_data.tasks; // android doesn't build if you use m_data.tasks directly in the connect statement
-    connect(tasksModel, &QAbstractListModel::dataChanged, this, &Storage::scheduleSave);
-    connect(tasksModel, &QAbstractListModel::rowsInserted, this, &Storage::scheduleSave);
-    connect(tasksModel, &QAbstractListModel::rowsRemoved, this, &Storage::scheduleSave);
-    connect(tasksModel, &QAbstractListModel::modelReset, this, &Storage::scheduleSave);
-
-    m_data.tasks.setDataFunction(&tasksDataFunction);
-    m_data.tasks.insertRole("task", nullptr, TaskRole);
-    m_data.tasks.insertRole("taskPtr", nullptr, TaskPtrRole);
-    m_data.tasks.insertRole("dueDateSection", nullptr, DueDateSectionRole);
-    m_stagedTasksModel->setSourceModel(m_data.tasks);
+    m_stagedTasksModel->setSourceModel(m_backendInstance->taskModel());
     m_stagedTasksModel->setFilterStaged(true);
 
-    m_archivedTasksModel->setSourceModel(m_data.tasks);
+    m_archivedTasksModel->setSourceModel(m_backendInstance->taskModel());
     m_archivedTasksModel->setFilterArchived(true);
     m_untaggedTasksModel->setFilterUntagged(true);
     m_untaggedTasksModel->setObjectName("Untagged and archived tasks model");
@@ -170,154 +103,35 @@ Storage::~Storage()
 #endif
 }
 
-const TagList& Storage::tags() const
-{
-    return m_data.tags;
-}
-
-TaskList Storage::tasks() const
-{
-    return m_data.tasks;
-}
-
-Storage::Data Storage::data() const
-{
-    return m_data;
-}
-
-void Storage::setData(Storage::Data &data)
-{
-    Tag::List newTags;
-    foreach (const Tag::Ptr &tag, data.tags) {
-        if (tag->kernel())
-            newTags << tag;
-        else
-            newTags << createTag(tag->name(), tag->uuid());
-    }
-
-    data.tags = newTags;
-
-    foreach (const Task::Ptr &task, data.tasks) {
-        if (!task->kernel())
-            task->setKernel(m_kernel);
-    }
-
-    QByteArray oldInstanceId = m_data.instanceId;
-    m_data = data;
-    if (m_data.instanceId.isEmpty())
-        m_data.instanceId = oldInstanceId;
-
-    emit taskCountChanged();
-}
-
 void Storage::load()
 {
-    m_loadingInProgress = true;
-    m_savingDisabled += 1;
-    load_impl();
-    m_savingDisabled += -1;
-
-    if (m_data.tags.isEmpty()) {
-        // Create default tags. We always use the same uuids for these so we don't get
-        // duplicates when synching with other devices
-        createTag(tr("work"), "{bb2ab284-8bb7-4aec-a452-084d64e85697}");
-        createTag(tr("personal"), "{73533168-9a57-4fc0-ba9a-9120bbadcb6c}");
-        createTag(tr("family"), "{4e81dd75-84c4-4359-912c-f3ead717f694}");
-        createTag(tr("bills"), "{4b4ae5fb-f35d-4389-9417-96b7ddcb3b8f}");
-        createTag(tr("books"), "{b2697470-f457-461c-9310-7d4b56aea395}");
-        createTag(tr("movies"), "{387be44a-1eb7-4895-954a-cf5bc82d8f03}");
-    }
-    m_loadingInProgress = false;
-    emit taskCountChanged();
+    m_backendInstance->load();
 }
 
 void Storage::save()
 {
-#if defined(BUILT_FOR_TESTING)
-    Storage::saveCallCount++;
-#endif
-
-    if (!m_kernel->runtimeConfiguration().saveEnabled()) // Unit-tests don't save
-        return;
-
-    m_savingInProgress = true;
-    m_savingDisabled++;
-    save_impl();
-    m_savingDisabled--;
-    m_savingInProgress = false;
-}
-
-int Storage::serializerVersion() const
-{
-    return JsonSerializerVersion1;
-}
-
-bool Storage::saveScheduled() const
-{
-    return m_scheduleTimer.isActive();
+    m_backendInstance->save();
 }
 
 void Storage::scheduleSave()
 {
-    if (m_savingDisabled == 0) {
-        m_scheduleTimer.start();
-    }
+    m_backendInstance->scheduleSave();
 }
 
 bool Storage::removeTag(const QString &tagName)
 {
-    int index = indexOfTag(tagName);
-    if (index == -1) {
-        qWarning() << Q_FUNC_INFO << "Non existant tag" << tagName;
-        return false;
-    }
-
     emit tagAboutToBeRemoved(tagName);
-
-    if (webDAVSyncSupported())
-        m_data.deletedItemUids << m_data.tags.at(index)->uuid(); // TODO: Make this persistent
-    m_data.tags.removeAt(index);
-    m_deletedTagName = tagName;
-    return true;
+    return m_backendInstance->removeTag(tagName);
 }
 
 Tag::Ptr Storage::tag(const QString &name, bool create)
 {
-    Tag::Ptr tag = m_data.tags.value(indexOfTag(name));
-    return (tag || !create) ? tag : createTag(name);
+   return m_backendInstance->tag(name, create);
 }
 
 Tag::Ptr Storage::createTag(const QString &tagName, const QString &uid)
 {
-    QString trimmedName = tagName.trimmed();
-    if (trimmedName.isEmpty()) {
-        qWarning() << Q_FUNC_INFO << "Will not add empty tag";
-        return Tag::Ptr();
-    }
-
-    const int index = indexOfTag(trimmedName);
-    if (index != -1) {
-        qDebug() << Q_FUNC_INFO << "Refusing to add duplicate tag " << tagName;
-        return m_data.tags.at(index);
-    }
-
-    Tag::Ptr tag = Tag::Ptr(new Tag(m_kernel, trimmedName));
-    if (!uid.isEmpty())
-        tag->setUuid(uid);
-
-    m_data.tags << tag;
-    return tag;
-}
-
-int Storage::indexOfTag(const QString &name) const
-{
-    QString normalizedName = name.toLower().trimmed();
-    for (int i = 0; i < m_data.tags.count(); ++i) {
-        if (m_data.tags.at(i)->name().toLower() == normalizedName)
-            return i;
-    }
-
-    return -1;
+    return m_backendInstance->createTag(tagName, uid);
 }
 
 QString Storage::dataFile() const
@@ -330,68 +144,19 @@ QAbstractItemModel *Storage::tagsModel() const
     return m_sortedTagModel;
 }
 
-QString Storage::deletedTagName() const
-{
-    return m_deletedTagName;
-}
-
 bool Storage::containsTag(const QString &name) const
 {
-    QString normalizedName = name.toLower().trimmed();
-    foreach (const Tag::Ptr &tag, m_data.tags) {
-        if (tag->name().toLower() == normalizedName)
-            return true;
-    }
-
-    return false;
-}
-
-void Storage::clearTags()
-{
-    // Don't use clear here
-    foreach (const Tag::Ptr &tag, m_data.tags) {
-        removeTag(tag->name());
-    }
+    return m_backendInstance->containsTag(name);
 }
 
 bool Storage::renameTag(const QString &oldName, const QString &newName)
 {
-    // For renaming we remove and create instead of simply renaming.
-    // Webdav sync isn't prepared for a simple rename, because the task json
-    // references the tag name, not the tag uid
-
-    QString trimmedNewName = newName.trimmed();
-    if (oldName == newName || trimmedNewName.isEmpty())
-        return true;
-
-    if (indexOfTag(trimmedNewName) != -1)
-        return false; // New name already exists
-
-    Tag::Ptr oldTag = tag(oldName, /*create=*/ false);
-    if (!oldTag) {
-        qWarning() << "Could not find tag with name" << oldName;
-        return false;
-    }
-
-    if (!createTag(trimmedNewName, oldTag->uuid()))
-        return false;
-
-    foreach (const Task::Ptr &task, m_data.tasks) {
-        if (task->containsTag(oldName))
-            task->addTag(trimmedNewName);
-    }
-
-    if (!removeTag(oldName))
-        return false;
-
-    scheduleSave();
-    return true;
+    return m_backendInstance->renameTag(oldName, newName);
 }
 
 void Storage::onTagAboutToBeRemoved(const QString &tagName)
 {
-    foreach (const Task::Ptr &task, m_data.tasks)
-        task->removeTag(tagName);
+    return m_backendInstance->onTagAboutToBeRemoved(tagName);
 }
 
 TaskFilterProxyModel *Storage::taskFilterModel() const
@@ -409,7 +174,6 @@ TaskFilterProxyModel *Storage::dueDateTasksModel() const
     return m_dueDateTasksModel;
 }
 
-
 TaskFilterProxyModel *Storage::stagedTasksModel() const
 {
     return m_stagedTasksModel;
@@ -420,18 +184,14 @@ TaskFilterProxyModel *Storage::archivedTasksModel() const
     return m_archivedTasksModel;
 }
 
+QAbstractItemModel *Storage::taskModel() const
+{
+    return m_backendInstance->taskModel();
+}
+
 void Storage::dumpDebugInfo()
 {
-    qDebug() << Q_FUNC_INFO;
-    qDebug() << "task count:" << m_data.tasks.count();
-    for (int i = 0; i < m_data.tasks.count(); ++i)
-        qDebug() << i << m_data.tasks.at(i)->summary();
-
-    if (!m_data.deletedItemUids.isEmpty()) {
-        qDebug() << "Items pending deletion on webdav:";
-        foreach (const QString &uid, m_data.deletedItemUids)
-            qDebug() << uid;
-    }
+    m_backendInstance->dumpDebugInfo();
 }
 
 int Storage::proxyRowToSource(int proxyRow) const
@@ -442,88 +202,58 @@ int Storage::proxyRowToSource(int proxyRow) const
     return index.isValid() ? index.row() : -1;
 }
 
-int Storage::indexOfTask(const Task::Ptr &task) const
-{
-    for (int i = 0; i < m_data.tasks.count(); ++i) {
-        if (m_data.tasks.at(i) == task)
-            return i;
-    }
-
-    return -1;
-}
-
 void Storage::clearTasks()
 {
-    if (!m_data.tasks.isEmpty()) {
-        // Don't use clear() here
-        foreach (const Task::Ptr &task, m_data.tasks) {
-            removeTask(task);
-        }
-        emit taskCountChanged();
-    }
+    m_backendInstance->clearTasks();
 }
 
 void Storage::setDisableSaving(bool disable)
 {
-    m_savingDisabled += (disable ? 1 : -1);
-    if (m_savingDisabled < 0) {
-        qWarning() << "invalid value for m_savingDisabled" << m_savingDisabled;
-        Q_ASSERT(false);
-    }
+    m_backendInstance->setDisableSaving(disable);
 }
 
 bool Storage::savingInProgress() const
 {
-    return m_savingInProgress;
+    return m_backendInstance->savingInProgress();
 }
 
 bool Storage::loadingInProgress() const
 {
-    return m_loadingInProgress;
+    return m_backendInstance->loadingInProgress();
 }
 
 bool Storage::webDAVSyncSupported() const
 {
-#ifndef NO_WEBDAV
-    return true;
-#endif
-    return false;
+    return m_backendInstance->webDAVSyncSupported();
 }
 
-QByteArray Storage::instanceId()
+bool Storage::hasTasks() const
 {
-    if (m_data.instanceId.isEmpty())
-        m_data.instanceId = QUuid::createUuid().toByteArray();
-
-    return m_data.instanceId;
+    return m_backendInstance->taskModel()->rowCount() > 0;
 }
 
 Task::Ptr Storage::taskAt(int index) const
 {
-    return m_data.tasks.value(index);
+    return m_backendInstance->taskAt(index);
 }
 
 Task::Ptr Storage::addTask(const QString &taskText, const QString &uid)
 {
-    Task::Ptr task = Task::createTask(m_kernel, taskText, uid);
-    return addTask(task);
+    return m_backendInstance->addTask(taskText, uid);
 }
 
 Task::Ptr Storage::prependTask(const QString &taskText)
 {
-    Task::Ptr task = Task::createTask(m_kernel, taskText);
+    auto task = m_backendInstance->prependTask(taskText);
     connectTask(task);
-    m_data.tasks.prepend(task);
-    emit taskCountChanged();
     return task;
 }
 
 Task::Ptr Storage::addTask(const Task::Ptr &task)
 {
-    connectTask(task);
-    m_data.tasks << task;
-    emit taskCountChanged();
-    return task;
+    auto addedTask = m_backendInstance->addTask(task);
+    connectTask(addedTask);
+    return addedTask;
 }
 
 void Storage::connectTask(const Task::Ptr &task)
@@ -549,78 +279,12 @@ void Storage::connectTask(const Task::Ptr &task)
 
 void Storage::removeTask(const Task::Ptr &task)
 {
-    m_data.tasks.removeAll(task);
-    task->setTagList(TagRef::List()); // So Tag::taskCount() decreases in case Task::Ptr is left hanging somewhere
-    if (webDAVSyncSupported())
-        m_data.deletedItemUids << task->uuid(); // TODO: Make this persistent
-    emit taskCountChanged();
+    m_backendInstance->removeTask(task);
 }
-
-#ifdef DEVELOPER_MODE
-void Storage::removeDuplicateData()
-{
-    Data newData;
-    foreach (const Task::Ptr &task, m_data.tasks) {
-        bool found = false;
-        foreach (const Task::Ptr &task2, newData.tasks) {
-            if (task->uuid() != task2->uuid())
-                continue;
-
-            found = true;
-            break;
-        }
-
-        if (found) {
-            qDebug() << "Task " << task->summary() << task->uuid() << "is a duplicate";
-        } else {
-            newData.tasks << task;
-        }
-    }
-
-    foreach (const Tag::Ptr &tag, m_data.tags) {
-        bool found = false;
-        foreach (const Tag::Ptr &tag2, newData.tags) {
-            if (tag->name() != tag2->name())
-                continue;
-
-            found = true;
-            break;
-        }
-
-        if (found) {
-            qDebug() << "Tag " << tag->name() << "is a duplicate";
-        } else {
-            newData.tags << tag;
-        }
-    }
-
-    setData(newData);
-    qDebug() << Q_FUNC_INFO << "done";
-}
-
-#endif
 
 QAbstractItemModel* Storage::nonEmptyTagsModel() const
 {
     return m_nonEmptyTagsModel;
-}
-
-int Storage::taskCount() const
-{
-    return m_data.tasks.count();
-}
-
-int Storage::ageAverage() const
-{
-    if (m_data.tasks.isEmpty())
-        return 0;
-
-    int totalAge = 0;
-    foreach (const Task::Ptr &task, m_data.tasks) {
-        totalAge += task->daysSinceCreation();
-    }
-
-    return totalAge / m_data.tasks.count();
 }
 
 ExtendedTagsModel* Storage::extendedTagsModel() const

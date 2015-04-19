@@ -231,7 +231,7 @@ Page {
                 SmallText {
                     id: countText
                     anchors.left: parent.left
-                    text: qsTr("Task count: %1").arg(_storage.taskCount)
+                    text: qsTr("Task count: %1").arg(_storage.taskModel.count)
                 }
             }
 

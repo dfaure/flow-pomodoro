@@ -32,6 +32,7 @@
 #include "utils.h"
 #include "loadmanager.h"
 #include "flow_version.h"
+#include "tagmodel.h"
 
 #include <QTimer>
 #include <QScreen>
@@ -272,7 +273,7 @@ static int indexOfTag(QAbstractItemModel *model, Tag *tag)
 {
     int count = model->rowCount();
     for (int i = 0; i < count; ++i) {
-        Tag *t = model->data(model->index(i, 0), Storage::TagRole).value<Tag*>();
+        Tag *t = model->data(model->index(i, 0), TagModel::TagRole).value<Tag*>();
         if (t == tag)
             return i;
     }
@@ -284,7 +285,7 @@ void Controller::cycleTagSelectionLeft()
     QAbstractItemModel *m = tagsModel();
     int currentIndex = indexOfTag(m, m_currentTag);
     if (currentIndex > 0)
-        setCurrentTag(m->data(m->index(currentIndex - 1, 0), Storage::TagRole).value<Tag*>());
+        setCurrentTag(m->data(m->index(currentIndex - 1, 0), TagModel::TagRole).value<Tag*>());
 }
 
 void Controller::cycleTagSelectionRight()
@@ -292,14 +293,14 @@ void Controller::cycleTagSelectionRight()
     QAbstractItemModel *m = tagsModel();
     int currentIndex = indexOfTag(m, m_currentTag);
     if (currentIndex < m->rowCount() - 1)
-        setCurrentTag(m->data(m->index(currentIndex + 1, 0), Storage::TagRole).value<Tag*>());
+        setCurrentTag(m->data(m->index(currentIndex + 1, 0), TagModel::TagRole).value<Tag*>());
 }
 
 void Controller::selectTagByFirstLetter(const QChar &c)
 {
     int count = tagsModel()->rowCount();
     for (int i = 0; i < count; ++i) {
-        Tag *t = tagsModel()->data(tagsModel()->index(i, 0), Storage::TagRole).value<Tag*>();
+        Tag *t = tagsModel()->data(tagsModel()->index(i, 0), TagModel::TagRole).value<Tag*>();
         if (t->name().toLower().startsWith(c.toLower()))
             setCurrentTag(t);
     }
@@ -1182,7 +1183,7 @@ void Controller::editTask(Task *t, Controller::EditMode editMode)
                 if (tag) {
                     previousTask->addTag(tag->name());
                     previousTask->setSummary(summary);
-                } else if (m_settings->showContextMenuAfterAdd() && !m_storage->tasks().isEmpty()) {
+                } else if (m_settings->showContextMenuAfterAdd() && m_storage->hasTasks()) {
                     // It's a new task, lets popup the context menu to choose tags
                     requestContextMenu(previousTask, /*tagOnlyMenu=*/ true);
                 }

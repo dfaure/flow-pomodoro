@@ -9,7 +9,6 @@ SOURCES += $$PWD/checkabletagmodel.cpp \
            $$PWD/extendedtagsmodel.cpp \
            $$PWD/flowjsonbackendinstance.cpp \
            $$PWD/flowjsonplugin.cpp \
-           $$PWD/jsonstorage.cpp \
            $$PWD/kernel.cpp \
            $$PWD/loadmanager.cpp \
            $$PWD/nonemptytagfilterproxy.cpp \
@@ -26,8 +25,11 @@ SOURCES += $$PWD/checkabletagmodel.cpp \
            $$PWD/storageplugin.cpp \
            $$PWD/syncable.cpp \
            $$PWD/tag.cpp \
+           $$PWD/tagmodel.cpp \
            $$PWD/tagref.cpp \
+           $$PWD/tagrefmodel.cpp \
            $$PWD/task.cpp \
+           $$PWD/taskmodel.cpp \
            $$PWD/taskcontextmenumodel.cpp \
            $$PWD/taskfilterproxymodel.cpp \
            $$PWD/tooltipcontroller.cpp \
@@ -42,10 +44,8 @@ HEADERS += $$PWD/checkabletagmodel.h \
            $$PWD/extendedtagsmodel.h \
            $$PWD/flowjsonbackendinstance.h \
            $$PWD/flowjsonplugin.h \
-           $$PWD/jsonstorage.h      \
            $$PWD/kernel.h \
            $$PWD/loadmanager.h \
-           $$PWD/genericlistmodel.h \
            $$PWD/pluginbase.h \
            $$PWD/pluginmodel.h \
            $$PWD/quickview.h \
@@ -60,8 +60,11 @@ HEADERS += $$PWD/checkabletagmodel.h \
            $$PWD/storageplugin.h \
            $$PWD/syncable.h \
            $$PWD/tag.h \
+           $$PWD/tagmodel.h \
            $$PWD/tagref.h \
+           $$PWD/tagrefmodel.h \
            $$PWD/task.h \
+           $$PWD/taskmodel.h \
            $$PWD/taskcontextmenumodel.h \
            $$PWD/taskfilterproxymodel.h \
            $$PWD/tooltipcontroller.h \

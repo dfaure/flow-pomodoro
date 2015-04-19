@@ -1,7 +1,7 @@
 /*
   This file is part of Flow.
 
-  Copyright (C) 2014 Sérgio Martins <iamsergio@gmail.com>
+  Copyright (C) 2015 Sérgio Martins <iamsergio@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,39 +17,40 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CHECKABLETAGMODEL_H
-#define CHECKABLETAGMODEL_H
+#ifndef TAGRED_MODEL_H
+#define TAGRED_MODEL_H
 
-#include "tagmodel.h"
+#include "tagref.h"
 
-#include <QIdentityProxyModel>
+#include <QAbstractListModel>
+#include <QList>
 
-class Task;
-
-class CheckableTagModel : public QIdentityProxyModel
+class TagRefModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
-    enum {
-        ItemTextRole = TagModel::LastRole + 1,
-        CheckableRole
-    };
-
-    explicit CheckableTagModel(Task *parent);
-    QVariant data(const QModelIndex &proxyIndex, int role) const override;
+    explicit TagRefModel(QObject *parent = nullptr);
+    ~TagRefModel();
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-
     int count() const;
+    bool contains(const QString &tagName) const;
+    void removeAt(int index);
+    TagRef at(int index) const;
+    int indexOfTag(const QString &name) const;
+    void append(const TagRef &);
+    bool isEmpty() const;
+    void clear();
+    bool equalTags(TagRefModel *other) const;
 
 Q_SIGNALS:
     void countChanged();
-
-private Q_SLOTS:
-    void emitDataChanged(const QString &tagName);
+    void modelChanged();
 
 private:
-    Task *m_parentTask;
+    TagRef::List m_tagRefs;
 };
 
 #endif

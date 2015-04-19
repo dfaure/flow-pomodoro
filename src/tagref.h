@@ -21,8 +21,9 @@
 #define TAGREF_H
 
 #include "tag.h"
-#include "genericlistmodel.h"
+
 #include <QPointer>
+#include <vector>
 
 class Task;
 class Storage;
@@ -30,7 +31,7 @@ class Storage;
 class TagRef
 {
 public:
-    typedef GenericListModel<TagRef> List;
+    typedef std::vector<TagRef> List; // std::vector calls less CTORs than QVector when appending
 
     TagRef(const TagRef &other);
     TagRef operator=(const TagRef &);

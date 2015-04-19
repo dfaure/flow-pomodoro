@@ -21,6 +21,7 @@
 */
 
 #include "task.h"
+#include "tagrefmodel.h"
 #include "settings.h"
 #include "checkabletagmodel.h"
 #include "taskcontextmenumodel.h"
@@ -38,23 +39,6 @@
     int Task::taskCount;
 #endif
 
-enum {
-    TagRole = Qt::UserRole,
-    TaskRole
-};
-
-static QVariant dataFunction(const TagRef::List &list, int index, int role)
-{
-    switch (role) {
-    case TagRole:
-        return QVariant::fromValue<Tag*>(list.at(index).tag().data());
-    case TaskRole:
-        return QVariant::fromValue<Task*>(list.at(index).m_task.data());
-    default:
-        return QVariant();
-    }
-}
-
 Task::Task(Kernel *kernel, const QString &summary)
     : QObject()
     , Syncable()
@@ -68,6 +52,7 @@ Task::Task(Kernel *kernel, const QString &summary)
     , m_sortedContextMenuModel(nullptr)
     , m_kernel(kernel)
     , m_priority(PriorityNone)
+    , m_tagRefModel(new TagRefModel(this))
 {
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 
@@ -95,16 +80,7 @@ void Task::modelSetup()
 
     m_checkableTagModel = new CheckableTagModel(this);
 
-    m_tags.setDataFunction(&dataFunction);
-    m_tags.insertRole("tag", nullptr, TagRole);
-    m_tags.insertRole("task", nullptr, TaskRole);
-
-    QAbstractItemModel *tagsModel = m_tags; // android doesn't build if you use m_tags directly in the connect statement
-    connect(tagsModel, &QAbstractListModel::modelReset, this, &Task::tagsChanged);
-    connect(tagsModel, &QAbstractListModel::rowsInserted, this, &Task::tagsChanged);
-    connect(tagsModel, &QAbstractListModel::rowsRemoved, this, &Task::tagsChanged);
-    connect(tagsModel, &QAbstractListModel::layoutChanged, this, &Task::tagsChanged);
-    connect(tagsModel, &QAbstractListModel::dataChanged, this, &Task::tagsChanged);
+    connect(m_tagRefModel, &TagRefModel::modelChanged, this, &Task::tagsChanged);
 
     QHash<int, QByteArray> roleNames = storage->tagsModel()->roleNames();
     roleNames.insert(Qt::CheckStateRole, QByteArray("checkState"));
@@ -123,7 +99,7 @@ void Task::modelSetup()
     assert = new AssertingProxyModel(this);
     assert->setSourceModel(m_checkableTagModel);
     assert = new AssertingProxyModel(this);
-    assert->setSourceModel(m_tags);
+    assert->setSourceModel(m_tagRefModel);
 #endif
 }
 
@@ -192,45 +168,27 @@ void Task::setDescription(const QString &text)
 
 bool Task::containsTag(const QString &name) const
 {
-    return indexOfTag(name) != -1;
-}
-
-int Task::indexOfTag(const QString &name) const
-{
-    QString trimmedName = name.toLower().trimmed();
-    for (int i = 0; i < m_tags.count(); ++i) {
-        Q_ASSERT(m_tags.at(i).storage());
-        if (m_tags.at(i).tagName().toLower() == trimmedName)
-            return i;
-    }
-
-    return -1;
-}
-
-TagRef::List Task::tags() const
-{
-    return m_tags;
+    return m_tagRefModel->contains(name);
 }
 
 void Task::setTagList(const TagRef::List &list)
 {
-    if (!m_tags.isEmpty()) // No need to emit uneeded signals
-        m_tags.clear();
+    m_tagRefModel->clear();
 
     // Filter out duplicated tags
     QStringList addedTags;
     foreach (const TagRef &ref, list) {
         QString name = ref.tagName().toLower();
         if (!addedTags.contains(name) && !name.isEmpty()) {
-            addedTags << name;
-            m_tags << ref;
+            addedTags.push_back(name);
+            m_tags.push_back(ref);
         }
     }
 }
 
-QAbstractItemModel *Task::tagModel() const
+TagRefModel *Task::tagModel() const
 {
-    return m_tags;
+    return m_tagRefModel;
 }
 
 QAbstractItemModel *Task::checkableTagModel() const
@@ -245,16 +203,16 @@ void Task::addTag(const QString &tagName)
         return;
 
     if (!containsTag(trimmedName)) {
-        m_tags.append(TagRef(this, trimmedName, storage(), /*temporary=*/ true));
+        m_tagRefModel->append(TagRef(this, trimmedName, storage(), /*temporary=*/ true));
         emit tagToggled(trimmedName);
     }
 }
 
 void Task::removeTag(const QString &tagName)
 {
-    int index = indexOfTag(tagName);
+    int index = m_tagRefModel->indexOfTag(tagName);
     if (index != -1) {
-        m_tags.removeAt(index);
+        m_tagRefModel->removeAt(index);
         emit tagToggled(tagName);
     }
 }
@@ -365,8 +323,9 @@ QVariantMap Task::toJson() const
     map.insert("staged", m_staged);
     map.insert("description", m_description);
     QVariantList tags;
-    for (int i = 0; i < m_tags.count(); ++i)
-        tags << m_tags.at(i).tagName();
+    const int count = m_tagRefModel->count();
+    for (int i = 0; i < count; ++i)
+        tags << m_tagRefModel->at(i).tagName();
     map.insert("tags", tags);
     map.insert("creationTimestamp", m_creationDate.toMSecsSinceEpoch());
 
@@ -434,7 +393,7 @@ void Task::fromJson(const QVariantMap &map)
     TagRef::List tags;
     foreach (const QVariant &tag, tagsVariant) {
         if (!tag.toString().isEmpty())
-            tags << TagRef(this, tag.toString(), storage());
+            tags.push_back(TagRef(this, tag.toString(), storage()));
     }
 
     setTagList(tags);
@@ -461,19 +420,6 @@ Kernel *Task::kernel() const
     return m_kernel;
 }
 
-void Task::setKernel(Kernel *kernel)
-{
-    Q_ASSERT(kernel && !m_kernel);
-    m_kernel = kernel;
-
-    for (int i = 0; i < m_tags.count(); ++i) {
-        TagRef tagRef(this, m_tags.at(i).tagName(), m_kernel->storage());
-        m_tags.replace(i, tagRef); // operator[] is private
-    }
-
-    modelSetup();
-}
-
 Storage *Task::storage() const
 {
     return m_kernel ? m_kernel->storage() : nullptr;
@@ -487,15 +433,10 @@ bool Task::equals(Task *other) const
     if (m_summary != other->summary() || m_description != other->description())
         return false;
 
-    if (m_tags.count() != other->tags().count())
+    if (m_tagRefModel->count() != other->tagModel()->count())
         return false;
 
-    for (int i = 0; i < m_tags.count(); ++i) {
-        if (!m_tags.at(i).tag()->equals(other->tags().at(i).tag().data()))
-            return false;
-    }
-
-    return true;
+    return m_tagRefModel->equalTags(other->tagModel());
 }
 
 void Task::onEdited()

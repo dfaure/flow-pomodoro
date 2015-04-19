@@ -19,6 +19,7 @@
 
 #include "taskfilterproxymodel.h"
 #include "storage.h"
+#include "tagrefmodel.h"
 
 #include <QDebug>
 
@@ -80,7 +81,7 @@ bool TaskFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &s
         return false;
 
     if (m_filterUntagged)
-        return task->tags().isEmpty();
+        return task->tagModel()->isEmpty();
 
     if (m_filterDueDated)
         return task->dueDate().isValid();
@@ -88,14 +89,7 @@ bool TaskFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &s
     if (m_tagText.isEmpty())
         return true;
 
-    TagRef::List tags = task->tags();
-    for (int i = 0; i < tags.count(); ++i) {
-        const TagRef &tagref = tags.at(i);
-        if (tagref.tagName() == m_tagText)
-            return true;
-    }
-
-    return false;
+    return task->tagModel()->contains(m_tagText);
 }
 
 bool TaskFilterProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const

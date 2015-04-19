@@ -20,14 +20,16 @@
 #ifndef FLOW_TAG_H
 #define FLOW_TAG_H
 
-#include "genericlistmodel.h"
 #include "syncable.h"
 
+#include <QDebug>
 #include <QString>
 #include <QSharedPointer>
+#include <QVector>
 
 class TaskFilterProxyModel;
 class Kernel;
+class QAbstractItemModel;
 
 class Tag : public QObject, public Syncable
 {
@@ -38,7 +40,7 @@ class Tag : public QObject, public Syncable
     Q_OBJECT
 public:
     typedef QSharedPointer<Tag> Ptr;
-    typedef GenericListModel<Tag::Ptr> List;
+    typedef QVector<Tag::Ptr> List;
 
     explicit Tag(Kernel *kernel, const QString &name);
     explicit Tag(const QString &name, QAbstractItemModel *taskModel); // For fake tags ("All" and "Untagged")

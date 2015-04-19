@@ -18,7 +18,7 @@
 */
 
 #include "sortedtagsmodel.h"
-#include "storage.h"
+#include "tagmodel.h"
 #include "tag.h"
 
 SortedTagsModel::SortedTagsModel(QAbstractItemModel *source, QObject *parent) :
@@ -38,8 +38,8 @@ SortedTagsModel::SortedTagsModel(QAbstractItemModel *source, QObject *parent) :
 
 bool SortedTagsModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
-    Tag::Ptr leftTag = left.data(Storage::TagPtrRole).value<Tag::Ptr>();
-    Tag::Ptr rightTag = right.data(Storage::TagPtrRole).value<Tag::Ptr>();
+    Tag::Ptr leftTag = left.data(TagModel::TagPtrRole).value<Tag::Ptr>();
+    Tag::Ptr rightTag = right.data(TagModel::TagPtrRole).value<Tag::Ptr>();
     Q_ASSERT(leftTag);
     Q_ASSERT(rightTag);
 
@@ -62,6 +62,6 @@ int SortedTagsModel::count() const
 
 Tag* SortedTagsModel::at(int idx) const
 {
-    QVariant variant = data(index(idx, 0), Storage::TagPtrRole);
+    QVariant variant = data(index(idx, 0), TagModel::TagPtrRole);
     return variant.value<Tag::Ptr>().data();
 }

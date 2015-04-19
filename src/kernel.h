@@ -27,6 +27,7 @@
 #include <QObject>
 #include <QTimer>
 
+class FlowJsonPlugin;
 class Settings;
 class Storage;
 class Controller;
@@ -97,6 +98,7 @@ private:
 #endif
     QTimer m_dayChangedTimer;
     QDate m_currentDate;
+    FlowJsonPlugin *const m_flowJsonPlugin;
 
     static QPointer<Kernel> s_kernel; // QPointer, so unit-tests can delete and recreate
 };

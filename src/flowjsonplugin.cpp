@@ -19,9 +19,14 @@
 
 #include "flowjsonplugin.h"
 #include "flowjsonbackendinstance.h"
+#include "kernel.h"
 
-FlowJsonPlugin::FlowJsonPlugin(QObject *parent) : StoragePlugin(parent)
-{
+#include <QCoreApplication>
+
+FlowJsonBackendInstance* FlowJsonPlugin::s_backendInstance = nullptr;
+
+FlowJsonPlugin::FlowJsonPlugin(QObject *parent)
+    : StoragePlugin(parent) {
 }
 
 QString FlowJsonPlugin::text() const
@@ -41,13 +46,19 @@ bool FlowJsonPlugin::enabledByDefault() const
 
 StorageBackendInstance* FlowJsonPlugin::createBackend_impl()
 {
-    return new FlowJsonBackendInstance(this);
+    return backendInstance();
 }
 
 StorageBackendInstance *FlowJsonPlugin::fromConfiguration(const QVariant &)
 {
-    static FlowJsonBackendInstance *instance = new FlowJsonBackendInstance();
-    return instance;
+    return backendInstance();
+}
+FlowJsonBackendInstance *FlowJsonPlugin::backendInstance(Kernel *kernel)
+{
+    if (!s_backendInstance)
+        s_backendInstance = new FlowJsonBackendInstance(kernel, kernel);
+
+    return s_backendInstance;
 }
 
 bool FlowJsonPlugin::isSingleInstanced() const

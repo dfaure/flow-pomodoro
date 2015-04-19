@@ -26,14 +26,15 @@
 #include "tag.h"
 #include "tagref.h"
 #include "syncable.h"
-#include "genericlistmodel.h"
 #include "duedate.h"
+#include "tagrefmodel.h"
 
 #include <QString>
 #include <QMetaType>
 #include <QDateTime>
 #include <QDataStream>
 #include <QSharedPointer>
+#include <QAbstractItemModel>
 
 enum TaskStatus {
     TaskStopped,
@@ -47,11 +48,11 @@ enum SerializerVersion {
 };
 
 class CheckableTagModel;
-class QAbstractListModel;
 class Storage;
 class Kernel;
 class TaskContextMenuModel;
 class SortedTaskContextMenuModel;
+class TagRefModel;
 
 class Task : public QObject, public Syncable {
     Q_OBJECT
@@ -85,7 +86,7 @@ class Task : public QObject, public Syncable {
 
 public:
     typedef QSharedPointer<Task> Ptr;
-    typedef GenericListModel<Ptr> List;
+    typedef QVector<Ptr> List;
 
     enum Priority {
         // Don't change the numbering, 1 is the highest, per rfc2445
@@ -121,10 +122,8 @@ public:
     void setDescription(const QString &text);
 
     bool containsTag(const QString &name) const;
-    int indexOfTag(const QString &name) const;
-    TagRef::List tags() const;
     void setTagList(const TagRef::List &);
-    QAbstractItemModel *tagModel() const;
+    TagRefModel *tagModel() const;
     QAbstractItemModel *checkableTagModel() const;
 
     Q_INVOKABLE void addTag(const QString &tagName);
@@ -157,7 +156,6 @@ public:
 
     bool operator==(const Task &other) const;
     Kernel *kernel() const;
-    void setKernel(Kernel *);
     Storage *storage() const;
 
     bool equals(Task *) const;
@@ -230,6 +228,7 @@ private:
     SortedTaskContextMenuModel *m_sortedContextMenuModel;
     Kernel *m_kernel;
     Priority m_priority;
+    TagRefModel *const m_tagRefModel;
 };
 
 inline QDebug operator<<(QDebug dbg, const Task::Ptr &task)

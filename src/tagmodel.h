@@ -1,7 +1,7 @@
 /*
   This file is part of Flow.
 
-  Copyright (C) 2014 Sérgio Martins <iamsergio@gmail.com>
+  Copyright (C) 2015 Sérgio Martins <iamsergio@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,39 +17,43 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CHECKABLETAGMODEL_H
-#define CHECKABLETAGMODEL_H
+#ifndef TAG_MODEL_H
+#define TAG_MODEL_H
 
-#include "tagmodel.h"
+#include "tag.h"
 
-#include <QIdentityProxyModel>
+#include <QAbstractListModel>
+#include <QList>
 
-class Task;
-
-class CheckableTagModel : public QIdentityProxyModel
+class TagModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
-    enum {
-        ItemTextRole = TagModel::LastRole + 1,
-        CheckableRole
+    enum Role {
+        TagRole = Qt::UserRole,
+        TagPtrRole,
+        LastRole
     };
+    Q_ENUMS(Role)
 
-    explicit CheckableTagModel(Task *parent);
-    QVariant data(const QModelIndex &proxyIndex, int role) const override;
+    explicit TagModel(QObject *parent = nullptr);
+    ~TagModel();
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-
     int count() const;
+    Tag::List tags() const;
+    void remove(const Tag::Ptr &);
+    int indexOfTag(const QString &name) const;
+    Tag::Ptr tag(const QString &name) const;
 
 Q_SIGNALS:
     void countChanged();
-
-private Q_SLOTS:
-    void emitDataChanged(const QString &tagName);
+    void modelChanged();
 
 private:
-    Task *m_parentTask;
+    Tag::List m_tags;
 };
 
 #endif

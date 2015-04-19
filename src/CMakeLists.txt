@@ -10,8 +10,6 @@ set(flowPrivate_SRC
     extendedtagsmodel.cpp
     flowjsonbackendinstance.cpp
     flowjsonplugin.cpp
-    genericlistmodel.h
-    jsonstorage.cpp
     kernel.cpp
     loadmanager.cpp
     pluginbase.cpp
@@ -28,8 +26,11 @@ set(flowPrivate_SRC
     storageplugin.cpp
     syncable.cpp
     tag.cpp
+    tagmodel.cpp
     tagref.cpp
+    tagrefmodel.cpp
     task.cpp
+    taskmodel.cpp
     taskcontextmenumodel.cpp
     taskfilterproxymodel.cpp
     tooltipcontroller.cpp
